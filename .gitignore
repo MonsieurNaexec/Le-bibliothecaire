@@ -1,0 +1,6 @@
+/node_modules/
+/.eslintrc.json
+/config.json
+/google_credentials.json
+/token.json
+/db.json
