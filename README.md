@@ -10,7 +10,7 @@ Le bot ne sera pas fonctionnel tant qu'il n'aura pas été initialisé
 1. Tout d'abord, le bibliothécaire a besoin d'une feuille de données "Google Spreadsheets"  
    Créez-en une, puis récupérez son identifiant présant dans l'url (souvent sous la forme `docs.google.com/spreadsheets/d/IDENTIFIANT/edit`)
    Attention, ne copiez ***que*** la partie `IDENTIFIANT`.  
-2. Il faut maintenant donner accès au document au bibliothécaire. Pour cela, cliquez sur le bouton "Partager" en haut à droite et ajoutez l'addresse suivante en mode "éditeur": `le-bibliothecaire@le-bibliothecaire.iam.gserviceaccount.com`  
+2. Il faut maintenant donner accès au document au bibliothécaire. Pour cela, cliquez sur le bouton "Partager" en haut à droite et ajoutez l'addresse suivante en mode "éditeur": `le-bibliothecaire@le-bibliothecaire.iam.gserviceaccount.com` (décocher l'option "envoyer une notification")  
 3. Utilisez la commande `/setup {url} {channel}` où {url} est l'identifiant copié plus tôt, et {channel} est le salon dans lequel seront notifiées les demandes de livrets (en général un salon privé). Utilisez la touche `TAB` pour naviguer dans les différents champs de la commande. Les différentes feuilles du tableau Google Sheets se rempliront automatiquement, et vous pourrez supprimer la feuille par défaut.
 
 ## 3. Les données
