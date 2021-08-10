@@ -54,12 +54,18 @@ class Update extends Command {
           if (n.roleId) {
             const role = await interaction.guild.roles.fetch(n.roleId);
             channel.send(`${role} Un nouveau livret est sorti: **${b.book}**` + (b.title ? ` (${b.title})` : ''));
-          }else{
+          } else {
             channel.send(`Un nouveau livret est sorti: **${b.book}**` + (b.title ? ` (${b.title})` : ''));
           }
         });
-        if(book_notifications.length) await googleAPI.setBookPublished(interaction.guildId, b.id);
+        if (book_notifications.length) {
+          await googleAPI.setBookPublished(interaction.guildId, b.id);
+          realNbooks++;
+        }
       }
+
+      await interaction.editReply(`:white_check_mark: Mise à jour de ${forms.length} formulaires effectuée!\n:white_check_mark: Publication de ${realNbooks} livrets effectuée!`
+        + (realNbooks < books.length ? `\n:warning: ${books.length - realNbooks} n'ont pas été publiés car aucun salon ne leur est dédié.` : ''));
     }).catch(async e => {
       console.log(e);
       await interaction.editReply(`:x: Erreur: ${e}`);
