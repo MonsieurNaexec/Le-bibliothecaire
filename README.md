@@ -15,20 +15,21 @@ Le bot ne sera pas fonctionnel tant qu'il n'aura pas été initialisé
 
 ## 3. Les données
 Le bibliothécaire utilise 3 feuilles:
- - Livrets: C'est cette feuille que vous êtes censé remplir
-   - Catégorie: La catégorie du livret. Elle sera utilisée pour segmenter les livrets dans les différents formulaires et les annonces.
-   - Livre: Le titre du livre ou sa référence brève.
-   - Titre (optionnel): Le titre complet du livre. Il sera affiché en tant que description dans les menus déroulants.
-   - Publié (bot): Cette colonne est réservée au bibliothécaire. Elle lui sert à savoir s'il a déjà annoncé la parution de ce livret.
- - Formulaires: Vous ne devriez pas avoir à modifier cette feuille. Elle sert au bibliothécaire à garder la trace des différents formulaires créés.
- - Annonces: Vous ne devriez pas avoir à modifier cette feuille. Elle sert au bibliothécaire à garder la trace des différents salons d'annonce créés.
+ - **Livrets**: C'est cette feuille que vous êtes censé remplir
+   - **Catégorie**: La catégorie du livret. Elle sera utilisée pour segmenter les livrets dans les différents formulaires et les annonces.
+   - **Livre**: Le titre du livre ou sa référence brève.
+   - **Titre (optionnel)**: Le titre complet du livre. Il sera affiché en tant que description dans les menus déroulants.
+   - **Publié (bot)**: Cette colonne est réservée au bibliothécaire. Elle lui sert à savoir s'il a déjà annoncé la parution de ce livret.
+ - **Formulaires**: Vous ne devriez pas avoir à modifier cette feuille. Elle sert au bibliothécaire à garder la trace des différents formulaires créés.
+ - **Annonces**: Vous ne devriez pas avoir à modifier cette feuille. Elle sert au bibliothécaire à garder la trace des différents salons d'annonce créés.
 
 ## 4. Créer des formulaires de demande
 Le bibliothécaire peut générer des formulaires de demande de livrets, et consigner ces demandes dans le salon paramétré à l'étape 2.3 .  
-Pour générer un formulaire, utilisez la commande `/formulaire {catégorie} [{texte}]`. La {catégorie} désigne la catégorie des livrets (voir section *3. Les données*) qui seront listés dans ce formulaire. Le {texte}, facultatif, sera celui affiché dans le formulaire. Si non renseigné, la catégorie sera utilisée.
+Pour générer un formulaire, utilisez la commande `/formulaire {catégorie} [{texte}]` dans le salon en question. La {catégorie} désigne la catégorie des livrets (voir section *3. Les données*) qui seront listés dans ce formulaire. Le {texte}, facultatif, sera celui affiché dans le formulaire. Si non renseigné, la catégorie sera utilisée.
 
 ## 5. Créer des salons d'annonce
-*Cette fonctionnalité n'est pas encore implémentée*
+Le bibliothécaire peut annoncer la publication de nouveaux livrets.  
+Pour paramétrer un salon d'annonce, utilisez la commande `/notification {catégorie} [{role}]` dans le salon en question. La {catégorie} désigne la catégorie des livrets (voir section *3. Les données*) qui seront annoncés dans ce salon. Le {role}, facultatif, sera mentionné si renseigné.
 
 ## 6. Mettre à jour les données
 Lorsque vous aurez ajouté un ou plusieurs livret(s) dans la feuille "Livrets", il vous suffira de lancer la commande `/update`. Le bibliothécaire mettra à jour tous les formulaires, et annoncera les nouvelles sorties dans les salons d'annonce correspondants.

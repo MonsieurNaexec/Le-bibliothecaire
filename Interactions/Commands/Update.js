@@ -24,10 +24,10 @@ class Update extends Command {
      * @type {GoogleAPI}
      */
     const googleAPI = this.commandManager.app.googleAPI;
-    googleAPI.getForms(interaction.guildId).then(async forms=>{
-      for(let i = 0; i < forms.length; i++){
+    googleAPI.getForms(interaction.guildId).then(async forms => {
+      for (let i = 0; i < forms.length; i++) {
         const form = forms[i];
-        interaction.editReply(`:clock2: Mise à jour des formulaires (${i+1}/${forms.length}):\n\`${form.text ?? form.category}\` dans <#${form.channelId}>`);
+        interaction.editReply(`:clock2: Mise à jour des formulaires (${i + 1}/${forms.length}):\n\`${form.text ?? form.category}\` dans <#${form.channelId}>`);
         const channel = await interaction.guild.channels.fetch(form.channelId);
         const msg = await channel.messages.fetch(form.messageId);
         const books = await googleAPI.getBooksByCat(interaction.guildId, form.category);
@@ -36,10 +36,30 @@ class Update extends Command {
           .setPlaceholder(form.text || form.category);
 
         books.forEach(e => selector.addOptions(e));
-        if (books.length == 0) selector.addOptions({label: 'Aucun livret n\'est disponible pour le moment', value: 'null'});
-        msg.edit({ content: `Demander un livre pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
+        if (books.length == 0) selector.addOptions({ label: 'Aucun livret n\'est disponible pour le moment', value: 'null' });
+        await msg.edit({ content: `Demander un livre pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
       }
-      interaction.editReply(`:white_check_mark: Mise à jour de ${forms.length} formulaires effectuée!`);
+      await interaction.editReply(`:white_check_mark: Mise à jour de ${forms.length} formulaires effectuée!`);
+      await interaction.editReply(`:clock2: Annonce des livres`);
+
+      const books = (await googleAPI.getAllBooks(interaction.guildId)).filter(b => !b.published);
+      const notifications = await googleAPI.getNotifications(interaction.guildId);
+      let realNbooks = 0;
+      for (let i = 0; i < books.length; i++) {
+        interaction.editReply(`:clock2: Annonce des livrets (${i + 1}/${books.length})`);
+        let b = books[i];
+        const book_notifications = notifications.filter(n => n.category == b.category);
+        book_notifications.forEach(async n => {
+          const channel = await interaction.guild.channels.fetch(n.channelId);
+          if (n.roleId) {
+            const role = await interaction.guild.roles.fetch(n.roleId);
+            channel.send(`${role} Un nouveau livret est sorti: **${b.book}**` + (b.title ? ` (${b.title})` : ''));
+          }else{
+            channel.send(`Un nouveau livret est sorti: **${b.book}**` + (b.title ? ` (${b.title})` : ''));
+          }
+        });
+        if(book_notifications.length) await googleAPI.setBookPublished(interaction.guildId, b.id);
+      }
     }).catch(async e => {
       console.log(e);
       await interaction.editReply(`:x: Erreur: ${e}`);
