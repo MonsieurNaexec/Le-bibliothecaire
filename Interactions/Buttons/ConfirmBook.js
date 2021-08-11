@@ -13,8 +13,12 @@ class ConfirmBook extends Button {
   async execute(interaction) {
     const title = interaction.value;
     interaction.guild.channels.fetch(this.buttonManager.app.db.configurations[interaction.guildId].channel).then(c=>{
-      c.send(`***${interaction.member.displayName}*** a demandé **${title}**`);
-      interaction.update({content: `:white_check_mark: La demande de **${title}** a bien été envoyée à un responsable`, components: []});
+      c.send(`***${interaction.member.displayName}*** a demandé **${title}**`).then(()=>{
+        interaction.update({content: `:white_check_mark: La demande de **${title}** a bien été envoyée à un responsable`, components: []});
+      }).catch(e=>{
+        console.log(e);
+        interaction.update({content: `:x: Une erreur est survenue, la demande a potentiellement échoué... Merci d'avertir un responsable au plus vite!`, components: []});
+      });
     })
   }
 }
