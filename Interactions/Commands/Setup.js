@@ -31,6 +31,7 @@ class Setup extends Command {
       db.configurations[interaction.guildId].spreadsheet = spreadsheetId;
       db.configurations[interaction.guildId].channel = interaction.options.getChannel('channel').id;
       db.save();
+      this.commandManager.app.googleAPI.documents[guildId] = doc;
       interaction.editReply(`:white_check_mark: Configuration terminée! Spreadsheet: \`${doc.title}\``);
     } else {
       interaction.editReply(":warning: L'URL de la feuille est mauvaise, ou je n'y ai pas accès!");
