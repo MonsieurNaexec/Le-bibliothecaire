@@ -1,4 +1,4 @@
-const { local_guild, local_deploy } = require('../config.json');
+const { local_guild, local_deploy, remote_deploy } = require('../config.json');
 const path = require('path');
 const fs = require('fs');
 const { CommandInteraction } = require('discord.js');
@@ -24,7 +24,7 @@ exports.CommandManager = class {
     });
 
     if (local_deploy) this.app.client.guilds.resolve(local_guild)?.commands.set(data);
-    else this.app.client.application?.commands.set(data);
+    else if(remote_deploy) this.app.client.application?.commands.set(data);
   }
 
   /**
