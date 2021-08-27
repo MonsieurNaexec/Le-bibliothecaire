@@ -31,7 +31,7 @@ class Form extends Command {
         data.forEach(e => selector.addOptions(e));
         if (data.length == 0) selector.addOptions({label: 'Aucun livret n\'est disponible pour le moment', value: 'null'});
 
-        const msg = await interaction.channel.send({ content: `Demander un livre pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
+        const msg = await interaction.channel.send({ content: `Demander un livret pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
 
         this.commandManager.app.googleAPI.addForm(msg.guildId, cat, msg.id, msg.channel.name, interaction.options.getString('texte', false));
 

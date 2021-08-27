@@ -13,7 +13,7 @@ class AskBook extends SelectMenu {
    */
   async execute(interaction) {
     if (interaction.values.length != 1) {
-      interaction.reply({ content: ":x: Une erreur s'est produite :/ Le nombre de livres n'est pas valide", ephemeral: true });
+      interaction.reply({ content: ":x: Une erreur s'est produite :/ Le nombre de livrets n'est pas valide", ephemeral: true });
       return;
     }
     

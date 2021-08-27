@@ -17,8 +17,8 @@ Le bot ne sera pas fonctionnel tant qu'il n'aura pas été initialisé
 Le bibliothécaire utilise 3 feuilles:
  - **Livrets**: C'est cette feuille que vous êtes censé remplir
    - **Catégorie**: La catégorie du livret. Elle sera utilisée pour segmenter les livrets dans les différents formulaires et les annonces.
-   - **Livre**: Le titre du livre ou sa référence brève.
-   - **Titre (optionnel)**: Le titre complet du livre. Il sera affiché en tant que description dans les menus déroulants.
+   - **Livre**: Le titre du livret ou sa référence brève.
+   - **Titre (optionnel)**: Le titre complet du livret. Il sera affiché en tant que description dans les menus déroulants.
    - **Publié (bot)**: Cette colonne est réservée au bibliothécaire. Elle lui sert à savoir s'il a déjà annoncé la parution de ce livret.
  - **Formulaires**: Vous ne devriez pas avoir à modifier cette feuille. Elle sert au bibliothécaire à garder la trace des différents formulaires créés.
  - **Annonces**: Vous ne devriez pas avoir à modifier cette feuille. Elle sert au bibliothécaire à garder la trace des différents salons d'annonce créés.

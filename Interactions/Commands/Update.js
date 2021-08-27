@@ -37,10 +37,10 @@ class Update extends Command {
 
         books.forEach(e => selector.addOptions(e));
         if (books.length == 0) selector.addOptions({ label: 'Aucun livret n\'est disponible pour le moment', value: 'null' });
-        await msg.edit({ content: `Demander un livre pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
+        await msg.edit({ content: `Demander un livret pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
       }
       await interaction.editReply(`:white_check_mark: Mise à jour de ${forms.length} formulaires effectuée!`);
-      await interaction.editReply(`:clock2: Annonce des livres`);
+      await interaction.editReply(`:clock2: Annonce des livrets`);
 
       const books = (await googleAPI.getAllBooks(interaction.guildId)).filter(b => !b.published);
       const notifications = await googleAPI.getNotifications(interaction.guildId);
