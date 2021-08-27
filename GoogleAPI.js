@@ -97,13 +97,13 @@ exports.GoogleAPI = class {
     await books_ws.saveUpdatedCells();
   }
 
-  async addForm(guildId, category, id, channel, text) {
+  async addForm(guildId, category, message, text) {
     if (!this.documents[guildId]) {
       if (this.app.db.configurations[guildId]) this.documents[guildId] = await this.openSpreadsheet(this.app.db.configurations[guildId].spreadsheet);
       else throw "La feuille de données n'est pas configurée correctement! Utilisez `/setup {URL}` pour l'initialiser";
     }
     const forms_ws = await this.getWorksheet(this.documents[guildId], 'Formulaires');
-    forms_ws.addRow([category, id, channel, text]);
+    forms_ws.addRow([category, message.channel.id, message.id, message.channel.name, text]);
   }
 
   async getForms(guildId) {

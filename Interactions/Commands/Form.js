@@ -33,7 +33,7 @@ class Form extends Command {
 
         const msg = await interaction.channel.send({ content: `Demander un livret pour: \`${selector.placeholder}\``, components: [new MessageActionRow().addComponents(selector)] });
 
-        this.commandManager.app.googleAPI.addForm(msg.guildId, cat, msg.id, msg.channel.name, interaction.options.getString('texte', false));
+        this.commandManager.app.googleAPI.addForm(msg.guildId, cat, msg, interaction.options.getString('texte', false));
 
         await interaction.editReply(':white_check_mark: Le formulaire a été créé!');
       }
