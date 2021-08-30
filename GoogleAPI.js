@@ -75,6 +75,11 @@ exports.GoogleAPI = class {
     });
   }
 
+  /**
+   * 
+   * @param {string} guildId 
+   * @returns {Array<{id, category, book, title, published}>}
+   */
   async getAllBooks(guildId){
     if (!this.documents[guildId]) {
       if (this.app.db.configurations[guildId]) this.documents[guildId] = await this.openSpreadsheet(this.app.db.configurations[guildId].spreadsheet);

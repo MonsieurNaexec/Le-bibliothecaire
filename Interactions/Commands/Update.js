@@ -25,12 +25,17 @@ class Update extends Command {
      */
     const googleAPI = this.commandManager.app.googleAPI;
     googleAPI.getForms(interaction.guildId).then(async forms => {
+      const allBooks = await googleAPI.getAllBooks(interaction.guildId);
       for (let i = 0; i < forms.length; i++) {
         const form = forms[i];
         interaction.editReply(`:clock2: Mise à jour des formulaires (${i + 1}/${forms.length}):\n\`${form.text ?? form.category}\` dans <#${form.channelId}>`);
         const channel = await interaction.guild.channels.fetch(form.channelId);
         const msg = await channel.messages.fetch(form.messageId);
-        const books = await googleAPI.getBooksByCat(interaction.guildId, form.category);
+        const books = allBooks.filter(e=>e.category==form.category).map(e => {
+          let r = { label: e.book, value: e.book + (e.title ? ` - ${e.title}` : '') };
+          if (e.title) r.description = e.title;
+          return r;
+        });
         const selector = new MessageSelectMenu()
           .setCustomId('ask_book')
           .setPlaceholder(form.text || form.category);
