@@ -102,6 +102,22 @@ exports.GoogleAPI = class {
     await books_ws.saveUpdatedCells();
   }
 
+  /**
+   * 
+   * @param {string} guildId 
+   * @param {number[]} books 
+   */
+  async setBooksPublished(guildId, books){
+    if (!this.documents[guildId]) {
+      if (this.app.db.configurations[guildId]) this.documents[guildId] = await this.openSpreadsheet(this.app.db.configurations[guildId].spreadsheet);
+      else throw "La feuille de données n'est pas configurée correctement! Utilisez `/setup {URL}` pour l'initialiser";
+    }
+    const books_ws = await this.getWorksheet(this.documents[guildId], 'Livrets');
+    await books_ws.loadCells({ startColumnIndex: 3, endColumnIndex: 4 });
+    books.forEach(e=> books_ws.getCell(e - 1, 3).value = 'TRUE');
+    await books_ws.saveUpdatedCells();
+  }
+
   async addForm(guildId, category, message, text) {
     if (!this.documents[guildId]) {
       if (this.app.db.configurations[guildId]) this.documents[guildId] = await this.openSpreadsheet(this.app.db.configurations[guildId].spreadsheet);
