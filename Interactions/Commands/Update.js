@@ -58,9 +58,9 @@ class Update extends Command {
           const channel = await interaction.guild.channels.fetch(n.channelId);
           if (n.roleId) {
             const role = await interaction.guild.roles.fetch(n.roleId);
-            channel.send(`${role} Un nouveau livret est sorti: **${b.book}**` + (b.title ? ` (${b.title})` : ''));
+            channel.send(`${role} Un nouveau livret est sorti dans la catégorie \`${b.category}\`: *${b.book}*` + (b.title ? ` - **__${b.title}__**` : ''));
           } else {
-            channel.send(`Un nouveau livret est sorti: **${b.book}**` + (b.title ? ` (${b.title})` : ''));
+            channel.send(`Un nouveau livret est sorti la catégorie \`${b.category}\`: *${b.book}*` + (b.title ? ` - **__${b.title}__**` : ''));
           }
         });
         if (book_notifications.length) {
