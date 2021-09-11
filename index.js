@@ -15,10 +15,11 @@ exports.Application = class {
     this.googleAPI = new GoogleAPI(this);
 
     //INIT DATABASE
-    this.db = fs.existsSync('db.json') ? JSON.parse(fs.readFileSync('db.json')) : { configurations: {} };
+    const dbSchema = { configurations: {}, books: {} };
+    this.db = fs.existsSync('db.json') ? { ...dbSchema, ...JSON.parse(fs.readFileSync('db.json')) } : dbSchema;
     this.db.save = () => { fs.writeFileSync('db.json', JSON.stringify(this.db)) }
     this.db.save();
-    
+
     this.bookOperations = {};
 
     this.client.once('ready', async () => {
