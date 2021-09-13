@@ -28,12 +28,12 @@ class AskBook extends SelectMenu {
     console.log("Select value: ", interaction.values[0], "Title:", title);
 
     const btnConfirm = new MessageButton()
-      .setCustomId('confirm_book:' + title)
+      .setCustomId('confirm_book:' + interaction.values[0])
       .setLabel('Oui, confirmer la commande')
       .setStyle('SUCCESS');
 
     const btnDeny = new MessageButton()
-      .setCustomId('deny_book:' + title)
+      .setCustomId('deny_book:' + interaction.values[0])
       .setLabel('Non, je me suis trompé')
       .setStyle('DANGER');
 
