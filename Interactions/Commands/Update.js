@@ -1,4 +1,4 @@
-const { CommandInteraction, MessageSelectMenu, MessageActionRow } = require('discord.js');
+const { CommandInteraction, MessageSelectMenu, MessageActionRow, CategoryChannel } = require('discord.js');
 const { GoogleAPI } = require('../../GoogleAPI');
 const { Command } = require("../Command");
 const { CommandManager } = require('../CommandManager');
@@ -28,10 +28,10 @@ class Update extends Command {
     const guildId = interaction.guildId;
     googleAPI.getForms(guildId).then(async forms => {
       const allBooks = await googleAPI.getAllBooks(guildId);
-      if(!db.books[guildId]) db.books[guildId] = {};
-      allBooks.forEach(e=>{
+      if (!db.books[guildId]) db.books[guildId] = {};
+      allBooks.forEach(e => {
         db.books[guildId][e.id] = `**${e.book}${(e.title ? ` - ${e.title}` : '')}** dans la catégorie \`${e.category}\``;
-      }); 
+      });
       db.save();
       for (let i = 0; i < forms.length; i++) {
         const form = forms[i];
@@ -58,6 +58,7 @@ class Update extends Command {
       const notifications = await googleAPI.getNotifications(interaction.guildId);
       let realNbooks = 0;
       let publishedBooks = [];
+      let errors = [];
       for (let i = 0; i < books.length; i++) {
         try {
           interaction.editReply(`:clock2: Annonce des livrets (${i + 1}/${books.length})`);
@@ -65,11 +66,16 @@ class Update extends Command {
           const book_notifications = notifications.filter(n => n.category == b.category);
           book_notifications.forEach(async n => {
             const channel = await interaction.guild.channels.fetch(n.channelId);
-            if (n.roleId) {
-              const role = await interaction.guild.roles.fetch(n.roleId);
-              channel.send(`${role} Un nouveau livret est sorti dans la catégorie \`${b.category}\`: *${b.book}*` + (b.title ? ` - **__${b.title}__**` : ''));
-            } else {
-              channel.send(`Un nouveau livret est sorti la catégorie \`${b.category}\`: *${b.book}*` + (b.title ? ` - **__${b.title}__**` : ''));
+            try {
+              if (n.roleId) {
+                const role = await interaction.guild.roles.fetch(n.roleId);
+                await channel.send(`${role} Un nouveau livret est sorti dans la catégorie \`${b.category}\`: *${b.book}*` + (b.title ? ` - **__${b.title}__**` : ''));
+              } else {
+                await channel.send(`Un nouveau livret est sorti la catégorie \`${b.category}\`: *${b.book}*` + (b.title ? ` - **__${b.title}__**` : ''));
+              }
+            } catch (e) {
+              errors.push(`:x: Une erreur est survenue pendant l'annonce du livret ${i + 1}: ${e}`);
+              throw e;
             }
           });
           if (book_notifications.length) {
@@ -77,13 +83,14 @@ class Update extends Command {
             realNbooks++;
           }
         } catch (e) {
-          interaction.editReply(`:x: Une erreur est survenue pendant l'annonce du livret ${i+1}: ${e}`);
+          errors.push(`:x: Une erreur est survenue pendant l'annonce du livret ${i + 1}: ${e}`);
         }
       }
       await googleAPI.setBooksPublished(interaction.guild.id, publishedBooks);
 
       await interaction.editReply(`:white_check_mark: Mise à jour de ${forms.length} formulaires effectuée!\n:white_check_mark: Publication de ${realNbooks} livrets effectuée!`
-        + (realNbooks < books.length ? `\n:warning: ${books.length - realNbooks} n'ont pas été publiés car aucun salon ne leur est dédié.` : ''));
+        + (realNbooks < books.length ? `\n:warning: ${books.length - realNbooks} n'ont pas été publiés car aucun salon ne leur est dédié.` : '')
+        + (errors.length ? `\n${errors.join('\n')}` : ''));
     }).catch(async e => {
       console.log(e);
       await interaction.editReply(`:x: Erreur: ${e}`);

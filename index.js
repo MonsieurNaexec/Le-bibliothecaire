@@ -32,8 +32,27 @@ exports.Application = class {
     this.client.on('interactionCreate', this.commandManager.handleCommand);
     this.client.on('interactionCreate', this.selectMenuManager.handleSelectMenu);
     this.client.on('interactionCreate', this.buttonManager.handleButton);
+    this.client.on('error', this.errorHandler);
+    this.client.on('shardError', this.errorHandler);
+    process.on('unhandledRejection', this.errorHandler);
 
     this.client.login(token);
+  }
+
+  errorHandler(error) {
+    const time = new Date();
+    const fileName = `error_${time.getFullYear()}_${time.getMonth()}_${time.getDay()}-${time.getHours()}_${time.getMinutes()}_${time.getSeconds()}${time.getMilliseconds()}.json`;
+    const dirName = './log/error/';
+    const fullPath = dirName + fileName;
+    const errorStr = JSON.stringify(error);
+    fs.mkdir(dirName, { recursive: true }, err => { if (err) console.log(err) });
+    fs.writeFile(fullPath, errorStr, { flag: 'w' }, (err, res) => {
+      if (err) {
+        console.log('Error while writing error:', err);
+      } else {
+        console.log(`[ERROR] Error details saved to ${fileName}`);
+      }
+    });
   }
 }
 

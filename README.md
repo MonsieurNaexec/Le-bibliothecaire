@@ -3,7 +3,7 @@ Le bibliothécaire est un bot discord développé par [M. Naexec](http://m-naexe
 
 # Utilisation
 ## 1. Ajout du bot
-Pour que le bot fonctionne, il faut d'abord [l'ajouter à votre serveur discord](https://discord.com/oauth2/authorize?client_id=874209950853922856&permissions=67584&scope=bot%20applications.commands). Assurez-vous d'avoir la permission "gérer le serveur".
+Pour que le bot fonctionne, il faut d'abord [l'ajouter à votre serveur discord](https://discord.com/oauth2/authorize?client_id=874209950853922856&permissions=67592&scope=bot%20applications.commands). Assurez-vous d'avoir la permission "gérer le serveur".
 
 ## 2. Mise en place
 Le bot ne sera pas fonctionnel tant qu'il n'aura pas été initialisé  
