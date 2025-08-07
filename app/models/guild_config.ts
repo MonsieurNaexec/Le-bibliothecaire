@@ -1,6 +1,6 @@
 import BookCategory from '#models/book_category'
 import { bot } from '#providers/discord_provider'
-import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
 
@@ -25,5 +25,15 @@ export default class GuildConfig extends BaseModel {
 
   get discordGuild() {
     return bot.client.guilds.resolve(this.id)
+  }
+
+  @computed()
+  get name() {
+    return this.discordGuild?.name ?? null
+  }
+
+  @computed()
+  get iconUrl() {
+    return this.discordGuild?.iconURL() ?? null
   }
 }

@@ -13,13 +13,7 @@ export default class GuildController {
     const roles = guild.discordGuild?.roles.cache.toJSON()
 
     return view.render('pages/guild', {
-      guild: {
-        id: guild.id,
-        name: guild.discordGuild?.name,
-        iconUrl: guild.discordGuild?.iconURL(),
-        adminRoleId: guild.adminRoleId,
-        backendRoleId: guild.backendRoleId,
-      },
+      guild: guild.serialize(),
       roles,
     })
   }
