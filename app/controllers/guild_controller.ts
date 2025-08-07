@@ -2,15 +2,11 @@ import { bot } from '#providers/discord_provider'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class GuildController {
-  async settings({ view, params, response, auth }: HttpContext) {
+  async settings({ view, params, response, bouncer }: HttpContext) {
     const guild = await bot.getGuild(params.id)
     if (!guild) return response.notFound('Guild not found or not joined')
-    const member = await guild.discordGuild?.members.fetch({ user: auth.user!.id })
-    if (!member) return response.notFound('You are not a member of this guild')
-    const isAdmin = member.permissions.has('Administrator')
-    const adminRole = guild.adminRoleId && member.roles.resolve(guild.adminRoleId)
 
-    if (!isAdmin && !adminRole) {
+    if (await bouncer.denies('accessGuildAdministration', guild.id)) {
       return response.forbidden('You do not have permission to access this guild settings')
     }
 
@@ -28,10 +24,14 @@ export default class GuildController {
     })
   }
 
-  async updateSettings({ request, response, params }: HttpContext) {
+  async updateSettings({ request, response, params, bouncer }: HttpContext) {
     const payload = request.only(['adminRole', 'backendRole'])
     const guild = await bot.getGuild(params.id)
     if (!guild) return response.notFound('Guild not found or not joined')
+
+    if (await bouncer.denies('accessGuildAdministration', guild.id)) {
+      return response.forbidden('You do not have permission to update this guild settings')
+    }
 
     if (payload.adminRole)
       guild.adminRoleId = payload.adminRole === 'null' ? null : payload.adminRole

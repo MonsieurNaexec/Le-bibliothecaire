@@ -2,19 +2,21 @@ import { bot } from '#providers/discord_provider'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class HomeController {
-  async index({ view, auth }: HttpContext) {
-    const botGuilds = bot.guilds
+  async index({ view, auth, bouncer }: HttpContext) {
     const userGuilds = await auth.user!.getGuilds()
-    const guilds = botGuilds.filter((guild) =>
-      userGuilds.some((userGuild) => userGuild.id === guild.id)
+    const guilds = await Promise.all(
+      userGuilds.map(async (guild) =>
+        (await bouncer.allows('accessGuildBackend', guild.id)) ? await bot.getGuild(guild.id) : null
+      )
     )
-    // TODO: Filter guilds based on permissions
     return view.render('pages/home', {
-      guilds: guilds.map((guild) => ({
-        id: guild.id,
-        name: guild.name,
-        iconUrl: guild.iconURL(),
-      })),
+      guilds: guilds
+        .filter((g) => g !== null && g.discordGuild !== null)
+        .map((guild) => ({
+          id: guild!.id,
+          name: guild!.discordGuild!.name,
+          iconUrl: guild!.discordGuild!.iconURL(),
+        })),
     })
   }
 }

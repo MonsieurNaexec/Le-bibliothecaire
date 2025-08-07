@@ -9,7 +9,9 @@ export class Bot {
 
   constructor(token: string) {
     this.#token = token
-    this.#client = new Client({ intents: [GatewayIntentBits.Guilds] })
+    this.#client = new Client({
+      intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
+    })
     this.#client.on('ready', this.#ready)
   }
 
