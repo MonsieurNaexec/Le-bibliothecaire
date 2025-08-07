@@ -1,0 +1,51 @@
+@let(guildUrl = request.url().match("^/guild/[0-9]+"))
+
+<div class="dock select-none">
+
+  <a href="/" class="{{ html.classNames({'dock-active': request.url() === '/'}) }}">
+    @svg('heroicons:home', {class:'size-6'})
+    <span class="dock-label">Accueil</span>
+  </a>
+
+  <a
+  @if(guildUrl)
+    href="{{ guildUrl }}/storage"
+  @end
+  class="{{ html.classNames({
+    'dock-active': request.url().match("^/guild/[0-9]+/storage"),
+    'text-base-content/50': !guildUrl
+  }) }}">
+    @svg('heroicons:book-open', {class:'size-6'})
+    <span class="dock-label">Stock</span>
+  </a>
+
+  <a
+  @if(guildUrl)
+    href="{{ guildUrl }}/queries"
+  @end
+  class="{{ html.classNames({
+    'dock-active': request.url().match("^/guild/[0-9]+/queries"),
+    'text-base-content/50': !guildUrl
+  }) }}">
+    @svg('heroicons:chat-bubble-bottom-center-text', {class:'size-6'})
+    <span class="dock-label">Demandes</span>
+  </a>
+
+  <button popovertarget="popover-profile" style="anchor-name:--anchor-profile">
+    <img class="size-[1.2em] rounded-full" src="{{ user.avatar }}" alt="{{ user.name }}" />
+    <span class="dock-label">{{ user.name }}</span>
+  </button>
+</div>
+<ul
+  class="dropdown dropdown-top dropdown-center menu rounded-box bg-base-100 shadow-sm"
+  popover
+  id="popover-profile"
+  style="position-anchor:--anchor-profile"
+>
+  <li>
+    <a href="/logout">
+      @svg('heroicons:arrow-right-start-on-rectangle')
+      Déconnexion
+    </a>
+  </li>
+</ul>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Le Bibliothécaire
+    </title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('dumper')
+
+    @if ($slots.head)
+      {{{ await $slots.head() }}}
+    @endif
+  </head>
+  <body class="min-h-screen w-screen">
+    {{{ await $slots.main() }}}
+    @!component('components/dock')
+  </body>
+</html>
