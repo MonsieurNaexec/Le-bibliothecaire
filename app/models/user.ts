@@ -10,7 +10,7 @@ type UserGuild = {
   id: string
   name: string
   iconUrl: string | null
-  permissions: string
+  permissions: number
   isAdmin: boolean
 }
 
