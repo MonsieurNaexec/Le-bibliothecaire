@@ -1,8 +1,10 @@
+import GuildConfig from '#models/guild_config'
 import { API_ENDPOINTS } from '#providers/discord_provider'
 import type { DiscordToken } from '@adonisjs/ally/types'
 import encryption from '@adonisjs/core/services/encryption'
 import logger from '@adonisjs/core/services/logger'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { PermissionFlagsBits } from 'discord.js'
 import type { DateTime } from 'luxon'
 
@@ -80,4 +82,10 @@ export default class User extends BaseModel {
     await this.save()
     return this._guilds
   }
+
+  @column()
+  declare lastGuildId: string | null
+
+  @belongsTo(() => GuildConfig, { foreignKey: 'lastGuildId' })
+  declare lastGuild: BelongsTo<typeof GuildConfig> | null
 }

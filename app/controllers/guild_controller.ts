@@ -3,7 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class GuildController {
   async settings({ view, params, response, bouncer }: HttpContext) {
-    const guild = await bot.getGuild(params.id)
+    const guild = await bot.getGuild(params.guildId)
     if (!guild) return response.notFound('Guild not found or not joined')
 
     if (await bouncer.denies('accessGuildAdministration', guild.id)) {
@@ -20,7 +20,7 @@ export default class GuildController {
 
   async updateSettings({ request, response, params, bouncer }: HttpContext) {
     const payload = request.only(['adminRole', 'backendRole'])
-    const guild = await bot.getGuild(params.id)
+    const guild = await bot.getGuild(params.guildId)
     if (!guild) return response.notFound('Guild not found or not joined')
 
     if (await bouncer.denies('accessGuildAdministration', guild.id)) {

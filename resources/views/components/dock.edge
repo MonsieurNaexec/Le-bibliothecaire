@@ -7,32 +7,35 @@
     <span class="dock-label">Accueil</span>
   </a>
 
-  <a
   @if(guildUrl)
+   <a
     href="{{ guildUrl }}/storage"
-  @end
-  class="{{ html.classNames({
-    'dock-active': request.url().match("^/guild/[0-9]+/storage"),
-    'text-base-content/50': !guildUrl
-  }) }}">
-    @svg('heroicons:book-open', {class:'size-6'})
+    class="{{ request.url().match("^/guild/[0-9]+/storage") ? 'dock-active' : '' }}">
+      @svg('heroicons:book-open', {class:'size-6'})
     <span class="dock-label">Stock</span>
   </a>
 
   <a
-  @if(guildUrl)
     href="{{ guildUrl }}/queries"
-  @end
-  class="{{ html.classNames({
-    'dock-active': request.url().match("^/guild/[0-9]+/queries"),
-    'text-base-content/50': !guildUrl
-  }) }}">
-    @svg('heroicons:chat-bubble-bottom-center-text', {class:'size-6'})
+    class="{{ request.url().match("^/guild/[0-9]+/queries") ? 'dock-active' : '' }}">
+      @svg('heroicons:chat-bubble-bottom-center-text', {class:'size-6'})
     <span class="dock-label">Demandes</span>
   </a>
+  @elseif(user.lastGuild)
+  <a href="/guild/{{ user.lastGuild.id }}/storage">
+    @if(user.lastGuild.iconUrl)
+      <img class="size-8 -mt-2 rounded-full shadow" src="{{ user.lastGuild.iconUrl }}" alt="{{ user.lastGuild.name }}" />
+    @else
+      <div class="rounded-full overflow-hidden shadow-lg size-8 bg-accent text-accent-content flex items-center justify-center">
+        {{ user.lastGuild.name[0].toUpperCase() }}
+      </div>
+    @end
+    <span class="dock-label">{{ user.lastGuild.name }}</span>
+  </a>
+  @end
 
   <button popovertarget="popover-profile" style="anchor-name:--anchor-profile">
-    <img class="size-[1.2em] rounded-full" src="{{ user.avatar }}" alt="{{ user.name }}" />
+    <img class="size-6 rounded-full" src="{{ user.avatar }}" alt="{{ user.name }}" />
     <span class="dock-label">{{ user.name }}</span>
   </button>
 </div>

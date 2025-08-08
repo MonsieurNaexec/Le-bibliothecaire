@@ -54,9 +54,24 @@ router.get('/discord/invite', ({ response }) => {
 router
   .group(() => {
     router.get('/', [HomeController, 'index'])
-    router.get('/guild/:id', [GuildController, 'settings']).as('guild.settings')
-    router.patch('/guild/:id', [GuildController, 'updateSettings']).as('guild.updateSettings')
-    router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')
-    router.get('/guild/:guildId/queries', [QueriesController, 'handle']).as('guild.queries')
+    router
+      .group(() => {
+        router.get('/guild/:guildId', [GuildController, 'settings']).as('guild.settings')
+        router
+          .patch('/guild/:guildId', [GuildController, 'updateSettings'])
+          .as('guild.updateSettings')
+        router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')
+        router.get('/guild/:guildId/queries', [QueriesController, 'handle']).as('guild.queries')
+      })
+      .use(async (ctx, next) => {
+        const user = ctx.auth.user
+        if (!user) return next()
+        await user.load('lastGuild')
+        if (ctx.params.guildId !== user.lastGuild?.id) {
+          user.lastGuildId = ctx.params.guildId
+          await user.save()
+        }
+        return next()
+      })
   })
   .use(middleware.auth())
