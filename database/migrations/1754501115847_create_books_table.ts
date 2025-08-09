@@ -11,7 +11,7 @@ export default class extends BaseSchema {
       table.timestamp('updated_at')
 
       table.string('title').notNullable()
-      table.string('description').notNullable()
+      table.string('description').notNullable().defaultTo('')
       table.timestamp('published_at').nullable()
       table
         .integer('category_id')
