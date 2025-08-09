@@ -1,4 +1,4 @@
-@let(guildUrl = request.url().match("^/guild/[0-9]+"))
+@let(guildUrl = request.url().match("^/guild/([0-9]+)"))
 
 <div class="dock select-none">
 
@@ -8,15 +8,24 @@
   </a>
 
   @if(guildUrl)
+    @can('accessGuildAdministration', guildUrl[1])
+    <a
+      href="{{ guildUrl[0] }}"
+      class="{{ request.url().match("^/guild/[0-9]+/?$") ? 'dock-active' : '' }}">
+        @svg('heroicons:cog-6-tooth', {class:'size-6'})
+      <span class="dock-label">Paramètres</span>
+    </a>
+    @end
+
    <a
-    href="{{ guildUrl }}/storage"
+    href="{{ guildUrl[0] }}/storage"
     class="{{ request.url().match("^/guild/[0-9]+/storage") ? 'dock-active' : '' }}">
       @svg('heroicons:book-open', {class:'size-6'})
     <span class="dock-label">Stock</span>
   </a>
 
   <a
-    href="{{ guildUrl }}/queries"
+    href="{{ guildUrl[0] }}/queries"
     class="{{ request.url().match("^/guild/[0-9]+/queries") ? 'dock-active' : '' }}">
       @svg('heroicons:chat-bubble-bottom-center-text', {class:'size-6'})
     <span class="dock-label">Demandes</span>
