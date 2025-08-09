@@ -14,7 +14,7 @@
       {{{ await $slots.head() }}}
     @endif
   </head>
-  <body class="min-h-screen w-screen pb-16 flex flex-col">
+  <body class="min-h-screen max-w-screen overflow-x-hidden pb-16 flex flex-col">
     {{{ await $slots.main() }}}
     @!component('components/dock')
   </body>

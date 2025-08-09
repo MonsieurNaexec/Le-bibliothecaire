@@ -36,4 +36,7 @@ export default class GuildConfig extends BaseModel {
   get iconUrl() {
     return this.discordGuild?.iconURL() ?? null
   }
+
+  @column()
+  declare storageAlertThreshold: number
 }

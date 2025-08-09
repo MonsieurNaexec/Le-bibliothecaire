@@ -27,4 +27,7 @@ export default class Book extends BaseModel {
 
   @belongsTo(() => BookCategory, { foreignKey: 'categoryId' })
   declare category: BelongsTo<typeof BookCategory>
+
+  @column()
+  declare storageAmount: number
 }

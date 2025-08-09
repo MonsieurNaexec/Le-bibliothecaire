@@ -55,6 +55,19 @@
             @endeach
           </select>
         </fieldset>
+        <fieldset class="fieldset min-w-56">
+          <legend class="fieldset-legend">
+            Seuil d'alerte de stock de livrets
+          </legend>
+          <input
+            type="number"
+            class="input"
+            name="storageAlertThreshold"
+            title="Seuil d'alerte de stock de livrets"
+            value="{{ guild.storageAlertThreshold }}"
+            data-patch
+          />
+        </fieldset>
       </div>
     </div>
   @endslot

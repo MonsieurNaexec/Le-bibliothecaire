@@ -1,7 +1,7 @@
 import Book from '#models/book'
 import BookCategory from '#models/book_category'
 import { bot } from '#providers/discord_provider'
-import { createBookValidator } from '#validators/books'
+import { createBookValidator, editBookValidator } from '#validators/books'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class StorageController {
@@ -102,7 +102,7 @@ export default class StorageController {
   async editBook({ request, response, bouncer }: HttpContext) {
     const guildId = request.param('guildId')
     const bookId = request.input('bookId')
-    const { title, description } = await createBookValidator.validate(request.all)
+    const { title, description, storageAmount } = await editBookValidator.validate(request.all())
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to access this guild storage')
@@ -116,8 +116,9 @@ export default class StorageController {
       return response.notFound('Book not found or does not belong to this guild')
     }
 
-    book.title = title
-    book.description = description
+    if (title) book.title = title
+    if (description) book.description = description
+    if (storageAmount !== undefined) book.storageAmount = storageAmount
     await book.save()
     return response.redirect().back()
   }

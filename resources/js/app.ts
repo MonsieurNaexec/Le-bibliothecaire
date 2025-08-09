@@ -1,4 +1,4 @@
-import { post } from './requests.js'
+import { patch } from './requests.js'
 
 let openedCollapsibles = new Set(
   JSON.parse(localStorage.getItem('openedCollapsibles') ?? '[]') as string[]
@@ -8,13 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Handle patch requests for select elements.
    */
-  const patchSelects = document.querySelectorAll('select[data-patch]')
+  const patchSelects = document.querySelectorAll('select[data-patch],input[data-patch]')
   patchSelects.forEach((select) => {
     let currentValue = (select as HTMLSelectElement).value
     select.addEventListener('change', async (event) => {
       const target = event.target as HTMLSelectElement
       const url = target.dataset.patch ?? location.href
-      const result = await post(url, {
+      const result = await patch(url, {
         [target.name]: target.value,
       })
       if (result !== null) currentValue = target.value
@@ -98,5 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
         .querySelector(`[data-toggle-container="${toggleClass}"]`)
         ?.classList.remove(`**:data-[${toggleClass}]:hidden`)
     }
+  })
+
+  /**
+   * Handle increment/decrement buttons
+   */
+  const incrementButtons = document.querySelectorAll('[data-increment]') as NodeListOf<HTMLElement>
+  incrementButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!button.dataset.increment) return
+      const [targetId, amount] = button.dataset.increment.split(',')
+      const target = document.getElementById(targetId) as HTMLElement | null
+      if (!target) return
+      const currentValue = parseInt(target.innerText) || 0
+      const amountValue = parseInt(amount)
+      const newValue =
+        amount.startsWith('+') || amount.startsWith('-')
+          ? currentValue + amountValue
+          : amountValue || 0
+      target.innerText = `${newValue < 0 ? '' : '+'}${newValue}`
+    })
   })
 })

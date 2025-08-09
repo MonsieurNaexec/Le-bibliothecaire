@@ -8,7 +8,7 @@
 */
 
 import User from '#models/user'
-import { getBotInviteUrl } from '#providers/discord_provider'
+import { bot, getBotInviteUrl } from '#providers/discord_provider'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 const HomeController = () => import('#controllers/home_controller')
@@ -71,6 +71,7 @@ router
         router.get('/guild/:guildId/queries', [QueriesController, 'handle']).as('guild.queries')
       })
       .use(async (ctx, next) => {
+        ctx.view.share({ guild: await bot.getGuild(ctx.params.guildId) })
         const user = ctx.auth.user
         if (!user) return next()
         await user.load('lastGuild')

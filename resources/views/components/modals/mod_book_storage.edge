@@ -1,0 +1,37 @@
+<dialog id="mod_book_storage" class="modal modal-bottom sm:modal-middle">
+  <form method="post" action="storage/books?_method=PATCH" class="contents">
+    <div class="modal-box">
+      <div id="mod_book_storage_BookTitle" class="font-semibold">
+      </div>
+      <div id="mod_book_storage_BookDescription" class="text-sm">
+      </div>
+      <div class="rounded p-2 bg-base-200 mt-2 flex items-center gap-2">
+        <div class="grow flex items-center gap-1">
+          @svg('heroicons:archive-box', {class: 'size-4'})
+          Stock actuel :
+          <input type="number" readonly name="storageAmount" id="mod_book_storage_BookStorageAmount"
+            class="w-10 focus-visible:outline-0 font-semibold" data-auto-resize />
+          (<span id="mod_book_storage_AmountDiff">+0</span>)
+          </span>
+        </div>
+        <button class="btn btn-circle btn-soft btn-sm" type="button" title="Diminuer le stock"
+          onclick="mod_book_storage_BookStorageAmount.value = Math.max(0, parseInt(mod_book_storage_BookStorageAmount.value) - 1);"
+          data-increment="mod_book_storage_AmountDiff,-1">
+          @svg('heroicons:minus', {class: 'size-4'})
+        </button>
+        <button class="btn btn-circle btn-soft btn-sm" type="button" title="Augmenter le stock"
+          onclick="mod_book_storage_BookStorageAmount.value = parseInt(mod_book_storage_BookStorageAmount.value) + 1;"
+          data-increment="mod_book_storage_AmountDiff,+1">
+          @svg('heroicons:plus', {class: 'size-4'})
+        </button>
+      </div>
+      <input type="hidden" name="bookId" id="mod_book_storage_BookId" />
+      <div class="modal-action">
+        {{ csrfField() }}
+        <button class="btn btn-primary" type="submit"
+          data-increment="mod_book_storage_AmountDiff,0">Enregistrer</button>
+        <button class="btn" formmethod="dialog" data-increment="mod_book_storage_AmountDiff,0">Annuler</button>
+      </div>
+    </div>
+  </form>
+</dialog>
