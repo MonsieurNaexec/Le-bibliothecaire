@@ -1,0 +1,14 @@
+<div class="flex flex-row gap-4 items-center justify-center pb-4">
+  <div
+    class="rounded-xl overflow-hidden border-2 shadow-lg size-14 bg-accent text-accent-content flex items-center justify-center"
+  >
+    @if(guild.iconUrl)
+      <img class="" src="{{ guild.iconUrl }}" alt="{{ guild.name }}" />
+    @else
+      {{ guild.name[0].toUpperCase() }}
+    @end
+  </div>
+  <h1 class="font-bold text-xl">
+    {{ guild.name }}
+  </h1>
+</div>

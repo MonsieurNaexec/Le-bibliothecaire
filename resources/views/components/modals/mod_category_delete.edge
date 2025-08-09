@@ -1,0 +1,18 @@
+<dialog id="mod_category_delete" class="modal modal-bottom sm:modal-middle">
+  <form action="?_method=DELETE" method="post" class="contents">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">
+        Supprimer une catégorie
+      </h3>
+      <p class="py-4">
+        Voulez-vous vraiment supprimer cette catégorie ?
+              <input type="hidden" name="categoryId" id="field_delete_category_id" />
+        {{ csrfField() }}
+      </p>
+      <div class="modal-action">
+        <button class="btn btn-error" type="submit">Oui</button>
+        <button class="btn" formmethod="dialog" formnovalidate>Non</button>
+      </div>
+    </div>
+  </form>
+</dialog>

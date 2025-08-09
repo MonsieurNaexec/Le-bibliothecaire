@@ -57,10 +57,17 @@ router
     router
       .group(() => {
         router.get('/guild/:guildId', [GuildController, 'settings']).as('guild.settings')
-        router
-          .patch('/guild/:guildId', [GuildController, 'updateSettings'])
-          .as('guild.updateSettings')
+        router.patch('/guild/:guildId', [GuildController, 'updateSettings'])
+
         router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')
+        router.post('/guild/:guildId/storage', [StorageController, 'addCategory'])
+        router.patch('/guild/:guildId/storage', [StorageController, 'editCategory'])
+        router.delete('/guild/:guildId/storage', [StorageController, 'deleteCategory'])
+
+        router.post('/guild/:guildId/storage/books', [StorageController, 'addBook'])
+        router.patch('/guild/:guildId/storage/books', [StorageController, 'editBook'])
+        router.delete('/guild/:guildId/storage/books', [StorageController, 'deleteBook'])
+
         router.get('/guild/:guildId/queries', [QueriesController, 'handle']).as('guild.queries')
       })
       .use(async (ctx, next) => {

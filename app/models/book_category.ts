@@ -23,6 +23,8 @@ export default class BookCategory extends BaseModel {
   @belongsTo(() => GuildConfig)
   declare guild: BelongsTo<typeof GuildConfig>
 
-  @hasMany(() => Book)
+  @hasMany(() => Book, {
+    foreignKey: 'categoryId',
+  })
   declare books: HasMany<typeof Book>
 }

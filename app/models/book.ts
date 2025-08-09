@@ -22,9 +22,9 @@ export default class Book extends BaseModel {
   @column()
   declare publishedAt: DateTime | null
 
-  @column({ columnName: 'category_id' })
+  @column()
   declare categoryId: number
 
-  @belongsTo(() => BookCategory)
+  @belongsTo(() => BookCategory, { foreignKey: 'categoryId' })
   declare category: BelongsTo<typeof BookCategory>
 }

@@ -1,22 +1,112 @@
 @layout.main()
   @slot('main')
-    <div class="flex flex-col items-center gap-4 p-16">
-      @each(guild in guilds)
-        <a href="/guild/{{ guild.id }}/" class="btn w-64 leading-0 gap-4">
-          @if(guild.iconUrl)
-            <img class="size-6 rounded-full" src="{{ guild.iconUrl }}" alt="{{ guild.name }}" />
-          @else
-            <div class="rounded-full size-6 bg-accent text-accent-content flex items-center justify-center">
-              {{ guild.name[0].toUpperCase() }}
+    <div
+      class="flex flex-col items-center gap-4 p-4 grow **:data-[edit-mode]:hidden"
+      data-toggle-container="edit-mode"
+    >
+      @!component('components/guild_header', { guild: guild })
+      <div class="self-start">
+        <label class="label">
+          <input type="checkbox" class="toggle" data-toggle-class="edit-mode" />
+          Mode édition
+      </label>
+      </div>
+      @each(category in categories)
+        <div
+          class="collapse collapse-arrow bg-base-200 border border-base-300"
+          id="collapse-storage-category-{{ category.id }}"
+        >
+          <input type="checkbox" name="accordion-categories" />
+          <div class="collapse-title font-semibold">
+            <div class="flex justify-between items-center">
+              {{ category.name }}
+              <div class="badge badge-outline badge-soft badge-info">
+                @svg('heroicons:book-open', {class: 'size-4'})
+                {{ category.books.length }}
+              </div>
             </div>
-          @end
-          <div class="grow text-left">
-            {{ guild.name }}
           </div>
-          @svg('heroicons:chevron-right')
-        </a>
+          <div class="collapse-content flex flex-col gap-4">
+            <div class="flex flex-row justify-end gap-2 w-full" data-edit-mode>
+              <button
+                class="btn btn-circle btn-sm btn-soft btn-primary"
+                type="button"
+                title="Modifier la catégorie"
+                onclick="field_edit_category_name.value= '{{ category.name }}'; field_edit_category_id.value = '{{ category.id }}'; mod_category_edit.showModal();"
+              >
+                @svg('heroicons:pencil-square', {class: 'size-4'})
+              </button>
+              <button
+                class="btn btn-circle btn-sm btn-soft btn-error"
+                type="button"
+                title="Supprimer la catégorie"
+                onclick="field_delete_category_id.value = '{{ category.id }}'; mod_category_delete.showModal();"
+              >
+                @svg('heroicons:trash', {class: 'size-4'})
+              </button>
+            </div>
+            <ul class="list">
+              @each(book in category.books)
+                <li class="list-row hover:bg-base-100/80">
+                  <div class="list-col-grow">
+                    <div>
+                      {{ book.title }}
+                    </div>
+                    <div class="text-xs font-semibold opacity-60">
+                      {{ book.description }}
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-circle btn-sm btn-soft btn-error"
+                    type="button"
+                    title="Supprimer le livret"
+                    data-edit-mode
+                    data-modal="mod_book_delete"
+                    data-modal-input-book-id="{{ book.id }}"
+                    data-modal-input-book-title="{{ book.title }}"
+                    data-modal-input-book-description="{{ book.description }}"
+                  >
+                    @svg('heroicons:trash', {class: 'size-4'})
+                  </button>
+                </li>
+              @else
+                <p class="text-sm text-gray-500">
+                  Aucune livret dans cette catégorie.
+                </p>
+              @end
+            </ul>
+            <form action="storage/books" method="post" class="border-t border-t-base-300 pt-1" data-edit-mode>
+              <p class="text-xs text-base-content/60">
+                Ajouter un livret
+              </p>
+              {{ csrfField() }}
+              <div class="flex flex-row items-center justify-stretch gap-2 ">
+                <input type="hidden" name="categoryId" value="{{ category.id }}" />
+                <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required />
+                <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" />
+                <button class="btn btn-circle btn-sm btn-soft btn-accent" type="submit" title="Ajouter un livret">
+                  @svg('heroicons:plus', {class: 'size-4'})
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       @end
-      <a href="/discord/invite" target="_blank" class="btn btn-primary w-64">Ajouter à un serveur</a>
+
+      <button
+        class="btn btn-primary btn-xl md:btn-md max-md:btn-circle fixed bottom-20 right-4 md:right-16"
+        onclick="mod_category_add.showModal()"
+        type="button"
+        title="Ajouter une catégorie"
+        data-edit-mode
+      >
+        @svg('heroicons:plus',{class: 'size-10 md:size-6'})
+        <span class="hidden md:inline">Ajouter une catégorie</span>
+      </button>
+      @!component('components/modals/mod_category_add')
+      @!component('components/modals/mod_category_edit')
+      @!component('components/modals/mod_category_delete')
+      @!component('components/modals/mod_book_delete')
     </div>
   @endslot
 @end

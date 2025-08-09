@@ -1,0 +1,26 @@
+<dialog id="mod_category_edit" class="modal modal-bottom sm:modal-middle">
+  <form action="?_method=PATCH" method="post" class="contents">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">
+        Modifier une catégorie
+      </h3>
+      <p class="py-4">
+        <input
+          id="field_edit_category_name"
+          type="text"
+          name="categoryName"
+          placeholder="Nom de la catégorie"
+          class="input input-bordered w-full"
+          required
+          autofocus
+        />
+        <input type="hidden" name="categoryId" id="field_edit_category_id" />
+        {{ csrfField() }}
+      </p>
+      <div class="modal-action">
+        <button class="btn btn-primary" type="submit">Ajouter</button>
+        <button class="btn" formmethod="dialog" formnovalidate>Annuler</button>
+      </div>
+    </div>
+  </form>
+</dialog>
