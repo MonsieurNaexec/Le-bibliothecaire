@@ -1,22 +1,9 @@
 @layout.main()
-  @slot('main')
-    <div class="flex flex-col items-center gap-4 p-16">
-      @each(guild in guilds)
-        <a href="/guild/{{ guild.id }}/" class="btn w-64 leading-0 gap-4">
-          @if(guild.iconUrl)
-            <img class="size-6 rounded-full" src="{{ guild.iconUrl }}" alt="{{ guild.name }}" />
-          @else
-            <div class="rounded-full size-6 bg-accent text-accent-content flex items-center justify-center">
-              {{ guild.name[0].toUpperCase() }}
-            </div>
-          @end
-          <div class="grow text-left">
-            {{ guild.name }}
-          </div>
-          @svg('heroicons:chevron-right')
-        </a>
-      @end
-      <a href="/discord/invite" target="_blank" class="btn btn-primary w-64">Ajouter à un serveur</a>
-    </div>
-  @endslot
+@slot('main')
+<div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
+  data-toggle-container="edit-mode">
+  @!component('components/guild_header', { guild: guild })
+
+</div>
+@endslot
 @end

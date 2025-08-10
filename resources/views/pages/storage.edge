@@ -1,6 +1,7 @@
 @layout.main()
 @slot('main')
-<div class="flex flex-col items-center gap-4 p-4 grow **:data-[edit-mode]:hidden" data-toggle-container="edit-mode">
+<div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
+  data-toggle-container="edit-mode">
   @!component('components/guild_header', { guild: guild })
   <div class="self-start">
     <label class="label">

@@ -17,7 +17,7 @@ export default class StorageController {
     const categories = await BookCategory.query()
       .where('guildId', guildId)
       .orderBy('name', 'asc')
-      .preload('books')
+      .preload('books', (q) => q.orderBy('title', 'asc'))
 
     return view.render('pages/storage', { categories, guild: guild.serialize() })
   }
