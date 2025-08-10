@@ -59,6 +59,19 @@ router
         router.get('/guild/:guildId', [GuildController, 'settings']).as('guild.settings')
         router.patch('/guild/:guildId', [GuildController, 'updateSettings'])
 
+        router.post('/guild/:guildId/announcement_channel', [
+          GuildController,
+          'addAnnouncementChannel',
+        ])
+        router.patch('/guild/:guildId/announcement_channel/:announcementChannelId', [
+          GuildController,
+          'updateAnnouncementChannel',
+        ])
+        router.delete('/guild/:guildId/announcement_channel/:announcementChannelId', [
+          GuildController,
+          'deleteAnnouncementChannel',
+        ])
+
         router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')
         router.post('/guild/:guildId/storage', [StorageController, 'addCategory'])
         router.patch('/guild/:guildId/storage', [StorageController, 'editCategory'])

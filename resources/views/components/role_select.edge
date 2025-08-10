@@ -1,0 +1,16 @@
+<div>
+  <label class="label">
+    {{ label }}
+  </label>
+  <select class="select" name="{{ name }}" {{ id ? `id="${id}" ` : '' }}title="{{ label }}" {{ typeof patch=="string" ?
+    `data-patch=${patch} ` : patch ? 'data-patch' : '' }}>
+    <option value="null" {{ currentValue ? '' : 'selected' }}>
+      Aucun
+    </option>
+    @each(role in roles)
+    <option value="{{ role.id }}" class="flex items-center gap-4" {{ role.id===currentValue ? 'selected' : '' }}>
+      {{ role.name }}
+    </option>
+    @endeach
+  </select>
+</div>

@@ -1,74 +1,64 @@
 @layout.main()
-  @slot('main')
-    <div class="flex flex-col items-center gap-4 p-4">
-      <div class="flex flex-row sm:flex-col gap-4 items-center justify-center">
-        <div
-          class="rounded-xl overflow-hidden border-2 shadow-lg size-14 bg-accent text-accent-content flex items-center justify-center"
-        >
-          @if(guild.iconUrl)
-            <img class="" src="{{ guild.iconUrl }}" alt="{{ guild.name }}" />
-          @else
-            {{ guild.name[0].toUpperCase() }}
-          @end
-        </div>
-        <h1 class="font-bold text-xl">
-          {{ guild.name }}
-        </h1>
-      </div>
+@slot('main')
+<div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden">
+  @!component('components/guild_header', { guild: guild })
 
-      <div class="flex flex-row flex-wrap gap-4 justify-center pt-4">
-        <fieldset class="fieldset min-w-56">
-          <legend class="fieldset-legend">
-            Rôle d'administration
-          </legend>
-          <select class="select" name="adminRole" id="adminRole" title="Rôle d'administration" data-patch>
-            <option value="null" {{ guild.adminRoleId ? '' : 'selected' }}>
-              Aucun
-            </option>
-            @each(role in roles)
-              <option
-                value="{{ role.id }}"
-                class="flex items-center gap-4"
-                {{ role.id === guild.adminRoleId ? 'selected' : '' }}
-              >
-                {{ role.name }}
-              </option>
-            @endeach
-          </select>
-        </fieldset>
-        <fieldset class="fieldset min-w-56">
-          <legend class="fieldset-legend">
-            Rôle d'accès backend
-          </legend>
-          <select class="select" name="backendRole" id="backendRole" title="Rôle d'accès" data-patch>
-            <option value="null" {{ guild.backendRoleId ? '' : 'selected' }}>
-              Aucun
-            </option>
-            @each(role in roles)
-              <option
-                value="{{ role.id }}"
-                class="flex items-center gap-4"
-                {{ role.id === guild.backendRoleId ? 'selected' : '' }}
-              >
-                {{ role.name }}
-              </option>
-            @endeach
-          </select>
-        </fieldset>
-        <fieldset class="fieldset min-w-56">
-          <legend class="fieldset-legend">
-            Seuil d'alerte de stock de livrets
-          </legend>
-          <input
-            type="number"
-            class="input"
-            name="storageAlertThreshold"
-            title="Seuil d'alerte de stock de livrets"
-            value="{{ guild.storageAlertThreshold }}"
-            data-patch
-          />
-        </fieldset>
+  <div class="flex flex-row flex-wrap gap-4 justify-center pt-4">
+    <fieldset
+      class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
+      <legend class="fieldset-legend">
+        Autorisations
+        </legend>
+      @!component('components/role_select', { label: "Rôle d'administration", name: 'adminRole', id: 'adminRole',
+      currentValue: guild.adminRoleId, roles, patch: true })
+      @!component('components/role_select', { label: "Rôle d'accès backend", name: 'backendRole', id: 'backendRole',
+      currentValue: guild.backendRoleId, roles, patch: true })
+      </fieldset>
+    <fieldset
+      class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
+      <legend class="fieldset-legend">
+        Paramètres du stock
+        </legend>
+      <div>
+        <label class="label">
+          Seuil d'alerte de stock de livrets
+        </label>
+        <input type="number" class="input" name="storageAlertThreshold" title="Seuil d'alerte de stock de livrets"
+          value="{{ guild.storageAlertThreshold }}" data-patch />
       </div>
-    </div>
-  @endslot
+      </fieldset>
+    <fieldset
+      class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
+      <legend class="fieldset-legend">
+        Paramètres d'annonce
+        </legend>
+      <div class="grid grid-cols-[1fr_1fr_min-content] items-end gap-x-4 gap-y-2">
+        @each(announcement_channel in guild.announcementChannels)
+        @!component('components/channel_select', { label: "Canal d'annonce", name: 'channelId', channels, currentValue:
+        announcement_channel.channelId, patch: `/guild/${guild.id}/announcement_channel/${announcement_channel.id}` })
+        @!component('components/role_select', { label: "Mention", name: 'mentionRoleId', roles, currentValue:
+        announcement_channel.mentionRoleId, patch: `/guild/${guild.id}/announcement_channel/${announcement_channel.id}`
+        })
+        <form action="{{ `/guild/${guild.id}/announcement_channel/${announcement_channel.id}?_method=DELETE` }}"
+          method="post">
+          {{ csrfField() }}
+          <button type="submit" class="btn btn-circle btn-error btn-sm m-1">
+            @svg('heroicons:trash', { class: 'size-4' })
+          </button>
+        </form>
+        @end
+        <form action="{{guild.id}}/announcement_channel" method="post" class="contents">
+          {{ csrfField() }}
+          <input type="hidden" name="guildId" value="{{ guild.id }}" />
+          @!component('components/channel_select', { label: "Canal d'annonce", name: 'channelId', channels })
+          @!component('components/role_select', { label: "Mention", name: 'mentionRoleId', roles })
+          <button type="submit" class="btn btn-circle btn-primary">
+            @svg('heroicons:plus', { class: 'size-6' })
+          </button>
+        </form>
+      </div>
+      </fieldset>
+      </div>
+      </div>
+      @endslot
 @end

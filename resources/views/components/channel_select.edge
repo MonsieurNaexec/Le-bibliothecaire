@@ -1,0 +1,16 @@
+<div>
+  <label class="label">
+    {{ label }}
+  </label>
+  <select class="select" name="{{ name }}" {{ id ? `id="${id}" ` : '' }}title="{{ label }}" {{ typeof patch=="string" ?
+    `data-patch=${patch} ` : patch ? 'data-patch' : '' }}>
+    <option value="null" {{ currentValue ? '' : 'selected' }}>
+      Aucun
+    </option>
+    @each(channel in channels)
+    <option value="{{ channel.id }}" class="flex items-center gap-4" {{ channel.id===currentValue ? 'selected' : '' }}>
+      {{ channel.name }}
+    </option>
+    @endeach
+  </select>
+</div>

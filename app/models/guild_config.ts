@@ -3,6 +3,7 @@ import { bot } from '#providers/discord_provider'
 import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
+import AnnouncementChannel from './announcement_channel.js'
 
 export default class GuildConfig extends BaseModel {
   @column({ isPrimary: true })
@@ -23,6 +24,10 @@ export default class GuildConfig extends BaseModel {
   @hasMany(() => BookCategory)
   declare bookCategories: HasMany<typeof BookCategory>
 
+  @hasMany(() => AnnouncementChannel, {
+    foreignKey: 'guildId',
+  })
+  declare announcementChannels: HasMany<typeof AnnouncementChannel>
   get discordGuild() {
     return bot.client.guilds.resolve(this.id)
   }
