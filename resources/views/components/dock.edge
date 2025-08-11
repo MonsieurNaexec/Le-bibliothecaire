@@ -30,7 +30,7 @@
       @svg('heroicons:chat-bubble-bottom-center-text', {class:'size-6'})
     <span class="dock-label">Demandes</span>
   </a>
-  @elseif(user.lastGuild)
+  @elseif(user.lastGuild && user.lastGuild.name)
   <a href="/guild/{{ user.lastGuild.id }}/storage">
     @if(user.lastGuild.iconUrl)
       <img class="size-8 -mt-2 rounded-full shadow" src="{{ user.lastGuild.iconUrl }}" alt="{{ user.lastGuild.name }}" />
