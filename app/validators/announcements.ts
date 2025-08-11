@@ -2,7 +2,7 @@ import vine from '@vinejs/vine'
 
 export const createAnnouncementChannelValidator = vine.compile(
   vine.object({
-    categoryId: vine.number(),
+    categoryId: vine.number().optional(),
     channelId: vine.string().regex(/^\d+$/),
     mentionRoleId: vine.string().optional(),
   })

@@ -71,6 +71,7 @@ router
           GuildController,
           'deleteAnnouncementChannel',
         ])
+        router.post('/guild/:guildId/publish', [GuildController, 'publish'])
 
         router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')
         router.post('/guild/:guildId/storage', [StorageController, 'addCategory'])

@@ -13,6 +13,12 @@ export class Bot {
       intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
     })
     this.#client.on('ready', this.#ready)
+    this.#client.on('error', (error) => {
+      logger.error({ error }, `Discord Bot encountered an error: ${error.message}`)
+    })
+    this.#client.on('shardError', (error) => {
+      logger.error({ error }, `Discord Bot encountered a shard error: ${error.message}`)
+    })
   }
 
   get client() {

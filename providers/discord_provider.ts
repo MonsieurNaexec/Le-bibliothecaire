@@ -1,5 +1,6 @@
 import env from '#start/env'
 import app from '@adonisjs/core/services/app'
+import { PermissionFlagsBits } from 'discord.js'
 import { Bot } from '../app/discord/bot.js'
 
 export const API_ENDPOINTS = {
@@ -46,7 +47,7 @@ export default class DiscordProvider {
 
 export const getBotInviteUrl = () => {
   const clientId = env.get('DISCORD_CLIENT_ID')
-  const permissions = 0
+  const permissions = PermissionFlagsBits.SendMessages
   const redirectUri = encodeURIComponent(
     env.get('DISCORD_REDIRECT_URL', 'http://localhost:3333/discord/callback')
   )

@@ -18,18 +18,23 @@
         {{ category.name }}
         @let([min,max] = category.books.reduce((acc, book) => [Math.min(acc[0], book.storageAmount), Math.max(acc[1],
         book.storageAmount)], [Infinity, -Infinity]))
-        <div class="flex flex-row items-center gap-2">
+        <div class="flex flex-row-reverse justify-start items-center flex-wrap gap-2">
+          <span class="badge badge-soft">
+            @svg('heroicons:book-open', {class: 'size-4'})
+            {{ category.books.length }}
+          </span>
           <span
-            class="{{ html.classNames(['badge','badge-soft', { 'badge-outline': min <= guild.storageAlertThreshold, 'badge-error': min <= 0, 'badge-warning': min <= guild.storageAlertThreshold && min > 0 }]) }}">
+            class="{{ html.classNames(['badge','badge-soft', 'whitespace-nowrap', { 'badge-outline': min <= guild.storageAlertThreshold, 'badge-error': min <= 0, 'badge-warning': min <= guild.storageAlertThreshold && min > 0 }]) }}">
             @svg('heroicons:archive-box', {class: 'size-4'})
             {{ min == Infinity ? '-' : min == max ? max : `${min} - ${max}` }}
           </span>
-          <div class="badge badge-soft">
-            @svg('heroicons:book-open', {class: 'size-4'})
-            {{ category.books.length }}
-          </div>
+          @if(category.books.some(book => book.publishedAt === null))
+          <span class="badge badge-soft badge-secondary" title="Des livrets n'ont pas encore été annoncés">
+            @svg('heroicons:megaphone', {class: 'size-4'})
+          </span>
+          @end
         </div>
-        </div>
+      </div>
     </div>
     <div class="collapse-content flex flex-col gap-4">
       <div class="flex flex-row justify-end gap-2 w-full px-4" data-edit-mode>
@@ -41,9 +46,9 @@
           onclick="field_delete_category_id.value = '{{ category.id }}'; mod_category_delete.showModal();">
           @svg('heroicons:trash', {class: 'size-4'})
         </button>
-        </div>
-        <ul class="list">
-          @each(book in category.books)
+      </div>
+      <ul class="list">
+        @each(book in category.books)
         <li class="list-row hover:bg-base-100/80" data-modal="mod_book_storage" data-modal-input-book-id="{{ book.id }}"
           data-modal-input-book-title="{{ book.title }}" data-modal-input-book-description="{{ book.description }}"
           data-modal-input-book-storage-amount="{{ book.storageAmount }}">
@@ -56,6 +61,11 @@
             </div>
           </div>
           <div class="list-col-1 text-right">
+            @if(book.publishedAt === null)
+            <span class="badge badge-soft badge-secondary" title="Ce livret n'a pas encore été annoncé">
+              @svg('heroicons:megaphone', {class: 'size-4'})
+            </span>
+            @end
             <span
               class="{{ html.classNames(['badge','badge-soft', { 'badge-outline': book.storageAmount <= guild.storageAlertThreshold, 'badge-error': book.storageAmount <= 0, 'badge-warning': book.storageAmount <= guild.storageAlertThreshold && book.storageAmount > 0 }]) }}">
               @svg('heroicons:archive-box', {class: 'size-4'})
@@ -67,36 +77,48 @@
             data-modal-input-book-description="{{ book.description }}">
             @svg('heroicons:trash', {class: 'size-4'})
           </button>
-          </li>
-          @else
-          <p class="text-sm text-gray-500">
-            Aucune livret dans cette catégorie.
+        </li>
+        @else
+        <p class="text-sm text-gray-500">
+          Aucune livret dans cette catégorie.
+        </p>
+        @end
+        </ul>
+        <form action="storage/books" method="post" class="border-t border-t-base-300 pt-1" data-edit-mode>
+          <p class="text-xs text-base-content/60">
+            Ajouter un livret
           </p>
-          @end
-          </ul>
-          <form action="storage/books" method="post" class="border-t border-t-base-300 pt-1" data-edit-mode>
-            <p class="text-xs text-base-content/60">
-              Ajouter un livret
-            </p>
-            {{ csrfField() }}
-            <div class="flex flex-row items-center justify-stretch gap-2 ">
-              <input type="hidden" name="categoryId" value="{{ category.id }}" />
-              <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required />
-              <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" />
-              <button class="btn btn-circle btn-sm btn-soft btn-accent" type="submit" title="Ajouter un livret">
-                @svg('heroicons:plus', {class: 'size-4'})
-              </button>
-            </div>
-          </form>
+          {{ csrfField() }}
+          <div class="flex flex-row items-center justify-stretch gap-2 ">
+            <input type="hidden" name="categoryId" value="{{ category.id }}" />
+            <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required />
+            <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" />
+            <button class="btn btn-circle btn-sm btn-soft btn-accent" type="submit" title="Ajouter un livret">
+              @svg('heroicons:plus', {class: 'size-4'})
+            </button>
           </div>
-          </div>
-          @end
+        </form>
+        </div>
+        </div>
+        @end
 
-  <button class="btn btn-primary btn-xl md:btn-md max-md:btn-circle fixed bottom-20 right-4 md:right-16"
-    onclick="mod_category_add.showModal()" type="button" title="Ajouter une catégorie" data-edit-mode>
-    @svg('heroicons:plus',{class: 'size-10 md:size-6'})
-    <span class="hidden md:inline">Ajouter une catégorie</span>
-  </button>
+  <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
+    @if(categories.some(category => category.books.some(book => book.publishedAt === null)))
+    <form action="/guild/{{ guild.id }}/publish" method="post">
+      {{ csrfField() }}
+      <button class="btn btn-secondary btn-xl md:btn-md max-md:btn-circle" type="submit"
+        title="Annoncer les nouveaux livrets">
+        @svg('heroicons:megaphone',{class: 'size-8 md:size-6'})
+        <span class="hidden md:inline">Annoncer les livrets</span>
+      </button>
+    </form>
+    @end
+    <button class="btn btn-primary btn-xl md:btn-md max-md:btn-circle" onclick="mod_category_add.showModal()"
+      type="button" title="Ajouter une catégorie" data-edit-mode>
+      @svg('heroicons:plus',{class: 'size-10 md:size-6'})
+      <span class="hidden md:inline">Ajouter une catégorie</span>
+    </button>
+  </div>
   @!component('components/modals/mod_category_add')
   @!component('components/modals/mod_category_edit')
   @!component('components/modals/mod_category_delete')
