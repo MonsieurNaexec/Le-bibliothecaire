@@ -7,6 +7,7 @@
 |
 */
 
+import Query from '#models/query'
 import User from '#models/user'
 import { bot, getBotInviteUrl } from '#providers/discord_provider'
 import router from '@adonisjs/core/services/router'
@@ -83,6 +84,10 @@ router
         router.delete('/guild/:guildId/storage/books', [StorageController, 'deleteBook'])
 
         router.get('/guild/:guildId/queries', [QueriesController, 'handle']).as('guild.queries')
+        router.delete('/guild/:guildId/query/:queryId', async ({ params, response }) => {
+          await Query.query().where('id', params.queryId).delete()
+          return response.redirect().back()
+        })
       })
       .use(async (ctx, next) => {
         ctx.view.share({ guild: await bot.getGuild(ctx.params.guildId) })

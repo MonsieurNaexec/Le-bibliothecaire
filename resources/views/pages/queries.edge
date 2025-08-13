@@ -3,7 +3,30 @@
 <div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
   data-toggle-container="edit-mode">
   @!component('components/guild_header', { guild: guild })
-
+  <ul class="list">
+    @each(query in queries)
+    <li class="list-row">
+      <div class="flex flex-col items-center">
+        @if(query.userAvatar)
+        <img src="{{ query.userAvatar }}" alt="{{ query.userName }}" class="avatar avatar-lg">
+        @end
+        <span class="text-sm font-semibold">{{ query.userName }}</span>
+      </div>
+      <div>
+        <div class="font-semibold">{{ query.bookTitle }}</div>
+        <div class="text-xs text-gray-500">{{ query.bookCategory }}</div>
+      </div>
+      <div>
+        <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE` }}" method="post">
+          {{ csrfField() }}
+          <button type="submit" class="btn btn-success btn-circle btn-soft btn-sm">
+            @svg('heroicons:check', { class: 'size-4' })
+          </button>
+        </form>
+      </div>
+    </li>
+    @end
+  </ul>
 </div>
 @endslot
 @end

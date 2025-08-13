@@ -5,6 +5,7 @@ import {
   createAnnouncementChannelValidator,
   updateAnnouncementChannelValidator,
 } from '#validators/announcements'
+import { updateSettingsValidator } from '#validators/settings'
 import type { HttpContext } from '@adonisjs/core/http'
 import { roleMention } from 'discord.js'
 import { DateTime } from 'luxon'
@@ -40,7 +41,7 @@ export default class GuildController {
   }
 
   async updateSettings({ request, response, params, bouncer }: HttpContext) {
-    const payload = request.only(['adminRole', 'backendRole', 'storageAlertThreshold'])
+    const data = await updateSettingsValidator.validate(request.all())
     const guild = await bot.getGuild(params.guildId)
     if (!guild) return response.notFound('Guild not found or not joined')
 
@@ -48,12 +49,17 @@ export default class GuildController {
       return response.forbidden('You do not have permission to update this guild settings')
     }
 
-    if (payload.adminRole)
-      guild.adminRoleId = payload.adminRole === 'null' ? null : payload.adminRole
-    if (payload.backendRole)
-      guild.backendRoleId = payload.backendRole === 'null' ? null : payload.backendRole
-    if (payload.storageAlertThreshold !== undefined)
-      guild.storageAlertThreshold = Number.parseInt(payload.storageAlertThreshold, 10)
+    if (data.adminRoleId) guild.adminRoleId = data.adminRoleId === 'null' ? null : data.adminRoleId
+    if (data.backendRoleId)
+      guild.backendRoleId = data.backendRoleId === 'null' ? null : data.backendRoleId
+    if (data.storageAlertThreshold !== undefined)
+      guild.storageAlertThreshold = data.storageAlertThreshold
+    if (data.queryNotificationChannelId)
+      guild.queryNotificationChannelId =
+        data.queryNotificationChannelId === 'null' ? null : data.queryNotificationChannelId
+    if (data.queryNotificationMentionRoleId)
+      guild.queryNotificationMentionRoleId =
+        data.queryNotificationMentionRoleId === 'null' ? null : data.queryNotificationMentionRoleId
 
     await guild.save()
     return response.noContent()

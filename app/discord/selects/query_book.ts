@@ -1,5 +1,8 @@
 import Book from '#models/book'
-import { MessageFlags, type StringSelectMenuInteraction } from 'discord.js'
+import Query from '#models/query'
+import { bot } from '#providers/discord_provider'
+import logger from '@adonisjs/core/services/logger'
+import { MessageFlags, roleMention, type StringSelectMenuInteraction } from 'discord.js'
 import type { DiscordSelect } from '../interactions.js'
 
 const queryBook: DiscordSelect = {
@@ -13,6 +16,7 @@ const queryBook: DiscordSelect = {
       .join('book_categories', 'book_categories.id', 'books.category_id')
       .where('books.id', bookId)
       .andWhere('book_categories.guild_id', interaction.guildId)
+      .select('books.*', 'book_categories.name as category_name')
       .first()
 
     if (!book) {
@@ -23,8 +27,38 @@ const queryBook: DiscordSelect = {
       return
     }
 
-    //TODO: Add query
-    //TODO: Notify in notification channel
+    const member = interaction.guild?.members.resolve(interaction.user.id)
+    const displayName = member?.displayName ?? interaction.user.username
+    await Query.create({
+      userId: interaction.user.id,
+      userName: displayName,
+      bookId: book.id,
+    })
+
+    const guildConfig = await bot.getGuild(interaction.guildId)
+    if (!guildConfig) {
+      logger.warn(
+        `Guild config not found for guild ${interaction.guildId} while querying book ${book.title} (${book.id})`
+      )
+    } else if (guildConfig.queryNotificationChannelId) {
+      const notificationChannel = interaction.guild?.channels.resolve(
+        guildConfig.queryNotificationChannelId
+      )
+      if (notificationChannel?.isTextBased()) {
+        const role =
+          interaction.guild && guildConfig.queryNotificationMentionRoleId
+            ? interaction.guild.roles.resolve(guildConfig.queryNotificationMentionRoleId)
+            : null
+        const mention = !role
+          ? ''
+          : role.name === '@everyone'
+            ? '@everyone '
+            : `${roleMention(role.id)} `
+        await notificationChannel.send({
+          content: `${mention}**${displayName}** a demandé le livret **${book.title}** *(${book.$extras.category_name})*`,
+        })
+      }
+    }
 
     await interaction.reply({
       content: `## :white_check_mark: La demande pour le livret **${book.title}** a bien été enregistrée!`,

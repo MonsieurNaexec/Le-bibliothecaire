@@ -21,6 +21,12 @@ export default class GuildConfig extends BaseModel {
   @column()
   declare backendRoleId: string | null
 
+  @column()
+  declare queryNotificationChannelId: string | null
+
+  @column()
+  declare queryNotificationMentionRoleId: string | null
+
   @hasMany(() => BookCategory)
   declare bookCategories: HasMany<typeof BookCategory>
 
