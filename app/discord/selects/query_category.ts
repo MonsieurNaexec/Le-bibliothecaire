@@ -34,12 +34,13 @@ const queryCategory: DiscordSelect = {
       .setPlaceholder('Sélectionner un livret')
 
     category.books.forEach((book) => {
-      select.addOptions(
-        new StringSelectMenuOptionBuilder()
-          .setLabel(book.title)
-          .setDescription(book.description)
-          .setValue(book.id.toString())
-      )
+      const option = new StringSelectMenuOptionBuilder()
+        .setLabel(book.title)
+        .setValue(book.id.toString())
+      if (book.description && book.description.length > 0) {
+        option.setDescription(book.description)
+      }
+      select.addOptions(option)
     })
 
     if (category.books.length === 0) {
@@ -53,7 +54,7 @@ const queryCategory: DiscordSelect = {
     const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select)
 
     await interaction.reply({
-      content: `## Demander un livret dans la catégorie **${category.name}**:`,
+      content: `## Demander un livret dans la catégorie \`${category.name}\`:`,
       components: [row],
       flags: MessageFlags.Ephemeral,
     })
