@@ -3,14 +3,17 @@
 <div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
   data-toggle-container="edit-mode">
   @!component('components/guild_header', { guild: guild })
-  <ul class="list">
+  <ul class="list w-full max-w-xl">
     @each(query in queries)
-    <li class="list-row">
+    <li class="list-row items-center">
       <div class="flex flex-col items-center">
         @if(query.userAvatar)
-        <img src="{{ query.userAvatar }}" alt="{{ query.userName }}" class="avatar avatar-lg">
-        @end
+        <div class="rounded-full overflow-hidden"><img src="{{ query.userAvatar }}" alt="{{ query.userName }}" class="w-8">
+        </div>
+        <span class="text-xs font-semibold">{{ query.userName }}</span>
+        @else
         <span class="text-sm font-semibold">{{ query.userName }}</span>
+        @end
       </div>
       <div>
         <div class="font-semibold">{{ query.bookTitle }}</div>

@@ -25,7 +25,7 @@ export default class QueriesController {
       const user = guild.discordGuild?.members.resolve(query.userId)
       return {
         id: query.id,
-        userAvatar: user?.avatarURL(),
+        userAvatar: user?.avatarURL() ?? user?.user.avatarURL() ?? null,
         userName: user?.displayName ?? query.userName,
         bookTitle: query.$extras.book_title,
         bookCategory: query.$extras.book_category,
