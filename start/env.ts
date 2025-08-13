@@ -45,4 +45,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   DISCORD_CLIENT_SECRET: Env.schema.string(),
   DISCORD_REDIRECT_URL: Env.schema.string.optional({ format: 'url' }),
   DISCORD_BOT_TOKEN: Env.schema.string(),
+
+  DISCORD_LOCAL_GUILD: Env.schema.string.optional(),
 })

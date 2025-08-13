@@ -36,20 +36,22 @@ export const accessGuildBackend = Bouncer.ability(async (user: User, guildId: st
   )
 })
 
-export const accessGuildAdministration = Bouncer.ability(async (user: User, guildId: string) => {
-  const guild = await bot.getGuild(guildId)
-  if (!guild) return false
+export const accessGuildAdministration = Bouncer.ability(
+  async (user: { id: string }, guildId: string) => {
+    const guild = await bot.getGuild(guildId)
+    if (!guild) return false
 
-  if (!guild.discordGuild) return false
-  let member = guild.discordGuild.members.resolve(user.id)
-  if (!member) {
-    await guild.discordGuild.members.fetch()
-    member = guild.discordGuild.members.resolve(user.id)
+    if (!guild.discordGuild) return false
+    let member = guild.discordGuild.members.resolve(user.id)
+    if (!member) {
+      await guild.discordGuild.members.fetch()
+      member = guild.discordGuild.members.resolve(user.id)
+    }
+
+    return (
+      !!member &&
+      (member.permissions.has(PermissionFlagsBits.Administrator) ||
+        (guild.adminRoleId !== null && !!member.roles.resolve(guild.adminRoleId)))
+    )
   }
-
-  return (
-    !!member &&
-    (member.permissions.has(PermissionFlagsBits.Administrator) ||
-      (guild.adminRoleId !== null && !!member.roles.resolve(guild.adminRoleId)))
-  )
-})
+)
