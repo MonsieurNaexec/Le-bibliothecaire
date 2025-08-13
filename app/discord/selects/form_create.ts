@@ -29,6 +29,14 @@ const formCreate: DiscordSelect = {
       )
     })
 
+    if (select.options.length === 0) {
+      await interaction.reply({
+        content: '## :warning: Aucune catégorie créée pour ce serveur.',
+        flags: MessageFlags.Ephemeral,
+      })
+      return
+    }
+
     const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select)
 
     await interaction.reply({
