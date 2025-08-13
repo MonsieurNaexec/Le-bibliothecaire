@@ -86,10 +86,10 @@ export class Bot {
   private commands: Record<string, DiscordCommand> | null = null
 
   async loadCommands() {
-    if (this.commands) return
+    if (this.commands) return this.commands
     this.commands = {}
     const commandsPath = new URL('./commands', import.meta.url)
-    if (!existsSync(commandsPath)) return
+    if (!existsSync(commandsPath)) return this.commands
     const collection: { [file: string]: any } = await fsImportAll(commandsPath)
     for (const file in collection) {
       const command = collection[file]
@@ -100,6 +100,7 @@ export class Bot {
         logger.warn(`Skipping invalid command file: ${file}`)
       }
     }
+    return this.commands
   }
 
   async handleCommand(interaction: CommandInteraction) {
