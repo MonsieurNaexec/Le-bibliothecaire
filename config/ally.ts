@@ -7,7 +7,7 @@ const allyConfig = defineConfig({
     clientSecret: env.get('DISCORD_CLIENT_SECRET'),
     callbackUrl: env.get('DISCORD_REDIRECT_URL', 'http://localhost:3333/discord/callback'),
 
-    prompt: 'none',
+    prompt: env.get('DISCORD_PROMPT') === 'none' ? 'none' : 'consent',
   }),
 })
 

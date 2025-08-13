@@ -8,49 +8,19 @@
 */
 
 import Query from '#models/query'
-import User from '#models/user'
-import { bot, getBotInviteUrl } from '#providers/discord_provider'
+import { bot } from '#providers/discord_provider'
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const LoginController = () => import('#controllers/login_controller')
 const HomeController = () => import('#controllers/home_controller')
 const StorageController = () => import('#controllers/storage_controller')
 const QueriesController = () => import('#controllers/queries_controller')
 const GuildController = () => import('#controllers/guild_controller')
 
-router.get('/login', ({ ally }) => {
-  return ally.use('discord').redirect((req) => {
-    req.scopes(['identify', 'guilds'])
-  })
-})
-router.get('/logout', async ({ auth, response }) => {
-  await auth.use('web').logout()
-  return response.redirect('/')
-})
-router.get('/discord/callback', async ({ auth, ally, response, logger }) => {
-  const discord = ally.use('discord')
-
-  if (discord.accessDenied()) return 'You have cancelled the login process'
-  if (discord.stateMisMatch()) return 'We are unable to verify the request. Please try again'
-  if (discord.hasError()) return discord.getError()
-
-  const discordUser = await discord.user()
-  logger.debug({ discordUser }, 'Logged in with Discord')
-
-  const user = await User.updateOrCreate(
-    { id: discordUser.id },
-    {
-      nickname: discordUser.original.global_name ?? discordUser.nickName,
-      avatarUrl: discordUser.avatarUrl,
-      token: discordUser.token,
-    }
-  )
-  await user.getGuilds(true)
-  await auth.use('web').login(user)
-  return response.redirect('/')
-})
-router.get('/discord/invite', ({ response }) => {
-  return response.redirect(getBotInviteUrl())
-})
+router.get('/login', [LoginController, 'login'])
+router.get('/logout', [LoginController, 'logout'])
+router.get('/discord/callback', [LoginController, 'discord_callback'])
+router.get('/discord/invite', [LoginController, 'discord_invite'])
 
 router
   .group(() => {
