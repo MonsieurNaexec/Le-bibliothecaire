@@ -44,6 +44,7 @@
     "@tailwindcss/vite": "^4.1.11",
     "@types/luxon": "^3.7.1",
     "@types/node": "^22.15.18",
+    "@types/semver": "^7.7.0",
     "daisyui": "^5.0.50",
     "eslint": "^9.26.0",
     "hot-hook": "^0.4.0",
@@ -71,7 +72,8 @@
     "edge.js": "^6.2.1",
     "luxon": "^3.7.1",
     "mysql2": "^3.14.3",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "semver": "^7.7.2"
   },
   "hotHook": {
     "boundaries": [
