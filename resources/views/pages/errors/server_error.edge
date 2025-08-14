@@ -1,8 +1,35 @@
-<h1>
-  {{ error.code }} - Server error
-</h1>
-<p>
-  This template is rendered by the
-  <a href="http://docs.adonisjs.com/guides/exception-handling#status-pages">status pages feature</a>
-  of the global exception handler.
-</p>
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>
+    {{ error.status }} - Le Bibliothécaire
+  </title>
+
+  @vite(['resources/css/app.css'])
+</head>
+
+<body class="min-h-screen max-w-screen overflow-x-hidden pb-16 flex flex-col items-center justify-center">
+  <h1 class="text-2xl font-bold mt-8">
+    Le Bibliothécaire
+  </h1>
+  <h2>
+    Quelque chose a mal tourné...
+  </h2>
+  <div class="py-8 flex flex-col gap-4">
+    <div role="alert" class="alert alert-error alert-soft">
+      @svg('heroicons:x-circle', { class: 'size-6' })
+      <div class="text-lg font-semibold">Une erreur est survenue</div>
+    </div>
+    <div class="alert">
+      <div>
+        <div><span class="font-bold">Code d'erreur:</span> {{ error.status }} - {{ error.code }}</div>
+        <div><span class="font-bold">ID de la requête:</span> {{ request.id() }}</div>
+      </div>
+    </div>
+  </div>
+  </body>
+  
+  </html>

@@ -17,6 +17,7 @@ const StorageController = () => import('#controllers/storage_controller')
 const QueriesController = () => import('#controllers/queries_controller')
 const GuildController = () => import('#controllers/guild_controller')
 
+router.get('/', [HomeController, 'index'])
 router.get('/login', [LoginController, 'login'])
 router.get('/logout', [LoginController, 'logout'])
 router.get('/discord/callback', [LoginController, 'discord_callback'])
@@ -24,7 +25,6 @@ router.get('/discord/invite', [LoginController, 'discord_invite'])
 
 router
   .group(() => {
-    router.get('/', [HomeController, 'index'])
     router
       .group(() => {
         router.get('/guild/:guildId', [GuildController, 'settings']).as('guild.settings')

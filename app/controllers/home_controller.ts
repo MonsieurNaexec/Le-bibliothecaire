@@ -2,7 +2,12 @@ import { bot } from '#providers/discord_provider'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class HomeController {
-  async index({ view, auth, bouncer }: HttpContext) {
+  async index(ctx: HttpContext) {
+    if (ctx.auth.isAuthenticated && ctx.auth.user) return this.loggedIn(ctx)
+    return ctx.view.render('pages/login')
+  }
+
+  async loggedIn({ view, auth, bouncer }: HttpContext) {
     const userGuilds = await auth.user!.getGuilds()
     const guilds = await Promise.all(
       userGuilds.map(async (guild) =>

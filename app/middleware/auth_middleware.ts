@@ -32,16 +32,6 @@ export default class AuthMiddleware {
         guardDriverName: ctx.auth.defaultGuard,
       })
 
-    if (ctx.auth.user && !ctx.auth.user.lastGuild) {
-      await ctx.auth.user.load('lastGuild')
-    }
-    ctx.view.share({
-      user: {
-        name: ctx.auth.user?.nickname,
-        avatar: ctx.auth.user?.avatarUrl,
-        lastGuild: ctx.auth.user?.lastGuild,
-      },
-    })
     return next()
   }
 }

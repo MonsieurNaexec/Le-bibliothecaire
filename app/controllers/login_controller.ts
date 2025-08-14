@@ -16,12 +16,28 @@ export default class LoginController {
     return response.redirect('/')
   }
 
-  async discord_callback({ ally, auth, response, logger }: HttpContext) {
+  async discord_callback({ ally, auth, response, logger, session }: HttpContext) {
     const discord = ally.use('discord')
 
-    if (discord.accessDenied()) return 'You have cancelled the login process'
-    if (discord.stateMisMatch()) return 'We are unable to verify the request. Please try again'
-    if (discord.hasError()) return discord.getError()
+    if (discord.accessDenied()) {
+      session.flashErrors({
+        E_AUTHENTICATION_FAILURE: "Vous avez annulé la procédure d'authentification",
+      })
+      return response.redirect('/')
+    }
+    if (discord.stateMisMatch()) {
+      session.flashErrors({
+        E_AUTHENTICATION_FAILURE: 'Impossible de vérifier votre identité, veuillez réessayer',
+      })
+      return response.redirect('/')
+    }
+    if (discord.hasError()) {
+      session.flashErrors({
+        E_AUTHENTICATION_FAILURE:
+          'Une erreur est survenue lors de la connexion: ' + discord.getError(),
+      })
+      return response.redirect('/')
+    }
 
     const discordUser = await discord.user()
     logger.debug({ discordUser }, 'Logged in with Discord')
@@ -34,7 +50,19 @@ export default class LoginController {
         token: discordUser.token,
       }
     )
-    await user.getGuilds(true)
+    try {
+      const guilds = await user.getGuilds(true)
+      logger.debug(
+        { user: { id: user.id, nickname: user.nickname }, guilds },
+        'Fetched user guilds'
+      )
+    } catch (error) {
+      logger.error({ error }, 'Failed to fetch user guilds')
+      session.flashErrors({
+        E_AUTHENTICATION_FAILURE: 'Impossible de récupérer les serveurs Discord',
+      })
+      return response.redirect('/')
+    }
     await auth.use('web').login(user)
     return response.redirect('/')
   }

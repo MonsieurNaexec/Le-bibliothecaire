@@ -11,6 +11,17 @@ export default class SilentAuthMiddleware {
   async handle(ctx: HttpContext, next: NextFn) {
     await ctx.auth.check()
 
+    if (ctx.auth.user && !ctx.auth.user.lastGuild) {
+      await ctx.auth.user.load('lastGuild')
+    }
+    ctx.view.share({
+      user: {
+        name: ctx.auth.user?.nickname,
+        avatar: ctx.auth.user?.avatarUrl,
+        lastGuild: ctx.auth.user?.lastGuild,
+      },
+    })
+
     return next()
   }
 }
