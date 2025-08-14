@@ -5,9 +5,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class LoginController {
   async login({ ally, logger, response }: HttpContext) {
     logger.debug('Redirecting to Discord for login')
-    await ally.use('discord').redirect((req) => {
-      req.scopes(['identify', 'guilds'])
-    })
+    await ally.use('discord').redirect()
     logger.debug(response.getBody())
   }
 
