@@ -36,4 +36,23 @@ export default class QueriesController {
 
     return view.render('pages/queries', { queries })
   }
+
+  async deleteQuery({ params, response }: HttpContext) {
+    const query = await Query.query()
+      .join('books', 'books.id', 'queries.book_id')
+      .join('book_categories', 'book_categories.id', 'books.category_id')
+      .where('queries.id', params.queryId)
+      .andWhere('book_categories.guild_id', params.guildId)
+      .select('queries.*')
+      .first()
+
+    if (!query) return response.redirect().back()
+
+    await query.load('book')
+    query.book.storageAmount = query.book.storageAmount - 1
+    await query.book.save()
+
+    await query.delete()
+    return response.redirect().back()
+  }
 }
