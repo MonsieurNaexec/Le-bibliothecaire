@@ -210,7 +210,7 @@ export default class GuildController {
           message += `## ${categoryName}\n`
           for (const book of categoryBooks) {
             message += book.description
-              ? `- **${book.title} :** ${book.description})\n`
+              ? `- **${book.title} :** ${book.description}\n`
               : `- **${book.title}**\n`
           }
         }
