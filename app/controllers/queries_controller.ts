@@ -16,7 +16,12 @@ export default class QueriesController {
     const dbQueries = await Query.query()
       .join('books', 'books.id', 'queries.book_id')
       .join('book_categories', 'book_categories.id', 'books.category_id')
-      .select('queries.*', 'books.title as book_title', 'book_categories.name as book_category')
+      .select(
+        'queries.*',
+        'books.title as book_title',
+        'books.storage_amount as book_storage_amount',
+        'book_categories.name as book_category'
+      )
       .orderBy('book_category', 'asc')
       .orderBy('book_title', 'asc')
       .orderBy('created_at', 'asc')
@@ -28,11 +33,10 @@ export default class QueriesController {
         userAvatar: user?.avatarURL() ?? user?.user.avatarURL() ?? null,
         userName: user?.displayName ?? query.userName,
         bookTitle: query.$extras.book_title,
+        bookStorageAmount: query.$extras.book_storage_amount,
         bookCategory: query.$extras.book_category,
       }
     })
-
-    await guild.load('announcementChannels')
 
     return view.render('pages/queries', { queries })
   }

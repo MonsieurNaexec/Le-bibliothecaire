@@ -20,6 +20,11 @@
         <div class="text-xs text-gray-500">{{ query.bookCategory }}</div>
       </div>
       <div>
+        @!component('components/storage_badge', {
+        amount: query.bookStorageAmount,
+        })
+        </div>
+        <div>
         <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE` }}" method="post">
           {{ csrfField() }}
           <button type="submit" class="btn btn-success btn-circle btn-soft btn-sm">

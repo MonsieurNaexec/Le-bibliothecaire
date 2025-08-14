@@ -23,11 +23,7 @@
             @svg('heroicons:book-open', {class: 'size-4'})
             {{ category.books.length }}
           </span>
-          <span
-            class="{{ html.classNames(['badge','badge-soft', 'whitespace-nowrap', { 'badge-outline': min <= guild.storageAlertThreshold, 'badge-error': min <= 0, 'badge-warning': min <= guild.storageAlertThreshold && min > 0 }]) }}">
-            @svg('heroicons:archive-box', {class: 'size-4'})
-            {{ min == Infinity ? '-' : min == max ? max : `${min} - ${max}` }}
-          </span>
+          @!component('components/storage_badge', { amount: [min,max] })
           @if(category.books.some(book => book.publishedAt === null))
           <span class="badge badge-soft badge-secondary" title="Des livrets n'ont pas encore été annoncés">
             @svg('heroicons:megaphone', {class: 'size-4'})
@@ -66,11 +62,7 @@
               @svg('heroicons:megaphone', {class: 'size-4'})
             </span>
             @end
-            <span
-              class="{{ html.classNames(['badge','badge-soft', { 'badge-outline': book.storageAmount <= guild.storageAlertThreshold, 'badge-error': book.storageAmount <= 0, 'badge-warning': book.storageAmount <= guild.storageAlertThreshold && book.storageAmount > 0 }]) }}">
-              @svg('heroicons:archive-box', {class: 'size-4'})
-              {{ book.storageAmount }}
-            </span>
+            @!component('components/storage_badge', { amount: book.storageAmount })
           </div>
           <button class="btn btn-circle btn-sm btn-soft btn-error" type="button" title="Supprimer le livret" data-edit-mode
             data-modal="mod_book_delete" data-modal-input-book-id="{{ book.id }}" data-modal-input-book-title="{{ book.title }}"
@@ -83,24 +75,24 @@
           Aucune livret dans cette catégorie.
         </p>
         @end
-        </ul>
-        <form action="storage/books" method="post" class="border-t border-t-base-300 pt-1" data-edit-mode>
-          <p class="text-xs text-base-content/60">
-            Ajouter un livret
-          </p>
-          {{ csrfField() }}
-          <div class="flex flex-row items-center justify-stretch gap-2 ">
-            <input type="hidden" name="categoryId" value="{{ category.id }}" />
-            <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required />
-            <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" />
-            <button class="btn btn-circle btn-sm btn-soft btn-accent" type="submit" title="Ajouter un livret">
-              @svg('heroicons:plus', {class: 'size-4'})
-            </button>
-          </div>
-        </form>
+      </ul>
+      <form action="storage/books" method="post" class="border-t border-t-base-300 pt-1" data-edit-mode>
+        <p class="text-xs text-base-content/60">
+          Ajouter un livret
+        </p>
+        {{ csrfField() }}
+        <div class="flex flex-row items-center justify-stretch gap-2 ">
+          <input type="hidden" name="categoryId" value="{{ category.id }}" />
+          <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required />
+          <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" />
+          <button class="btn btn-circle btn-sm btn-soft btn-accent" type="submit" title="Ajouter un livret">
+            @svg('heroicons:plus', {class: 'size-4'})
+          </button>
         </div>
-        </div>
-        @end
+      </form>
+      </div>
+      </div>
+      @end
 
   <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
     @if(categories.some(category => category.books.some(book => book.publishedAt === null)))

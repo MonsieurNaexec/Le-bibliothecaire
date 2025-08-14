@@ -1,0 +1,8 @@
+@let(amountMin = typeof amount === 'number' ? amount : amount[0])
+@let(amountMax = typeof amount === 'number' ? null : amount[1])
+<span
+  class="{{ html.classNames(['badge','badge-soft', { 'badge-outline': amountMin <= guild.storageAlertThreshold, 'badge-error': amountMin <= 0, 'badge-warning': amountMin <= guild.storageAlertThreshold && amountMin > 0 }]) }}">
+  @svg('heroicons:archive-box', {class: 'size-4'})
+  {{ amountMax !== null && amountMin !== amountMax ? amountMin == Infinity ? '-' : `${amountMin} - ${amountMax}` :
+  amountMin }}
+</span>
