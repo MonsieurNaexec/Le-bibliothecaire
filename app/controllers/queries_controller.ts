@@ -25,6 +25,7 @@ export default class QueriesController {
       .orderBy('book_category', 'asc')
       .orderBy('book_title', 'asc')
       .orderBy('created_at', 'asc')
+      .where('book_categories.guild_id', guild.id)
 
     const queries = dbQueries.map((query) => {
       const user = guild.discordGuild?.members.resolve(query.userId)
