@@ -2,7 +2,7 @@ import vine from '@vinejs/vine'
 
 export const createAnnouncementChannelValidator = vine.compile(
   vine.object({
-    categoryId: vine.number().optional(),
+    categoryId: vine.number().optional().nullable(),
     channelId: vine.string().regex(/^\d+$/),
     mentionRoleId: vine.string().optional(),
   })
@@ -10,6 +10,7 @@ export const createAnnouncementChannelValidator = vine.compile(
 
 export const updateAnnouncementChannelValidator = vine.compile(
   vine.object({
+    categoryId: vine.number().optional().nullable(),
     channelId: vine.string().regex(/^\d+$/).optional(),
     mentionRoleId: vine.string().optional(),
   })

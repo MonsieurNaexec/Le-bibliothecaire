@@ -1,0 +1,17 @@
+<div>
+  <label class="label">
+    {{ label }}
+  </label>
+  <select class="select" name="{{ name }}" {{ id ? `id="${id}" ` : '' }}title="{{ label }}" {{ typeof patch=="string" ?
+    `data-patch=${patch} ` : patch ? 'data-patch' : '' }}>
+    <option value="null" {{ currentValue ? '' : 'selected' }}>
+      {{ noneLabel ?? 'Aucune' }}
+    </option>
+    @each(category in categories)
+    <option value="{{ category.id }}" class="flex items-center gap-4" {{ category.id===currentValue ? 'selected' : ''
+      }}>
+      {{ category.name }}
+    </option>
+    @endeach
+  </select>
+</div>

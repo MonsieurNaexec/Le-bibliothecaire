@@ -1,5 +1,6 @@
 import AnnouncementChannel from '#models/announcement_channel'
 import Book from '#models/book'
+import BookCategory from '#models/book_category'
 import { bot } from '#providers/discord_provider'
 import {
   createAnnouncementChannelValidator,
@@ -21,22 +22,27 @@ export default class GuildController {
 
     const roles = guild.discordGuild?.roles.cache.toJSON()
     const channels = guild.discordGuild?.channels.cache
+      .toJSON()
       .filter(
         (channel) =>
           channel.isTextBased() &&
           channel.guild.members.me &&
-          channel.permissionsFor(channel.guild.members.me.id)?.has('SendMessages')
+          channel.permissionsFor(channel.guild.members.me.id)?.has('SendMessages') &&
+          channel.permissionsFor(channel.guild.members.me.id)?.has('ViewChannel')
       )
-      .toJSON()
+    const categories = await BookCategory.query().where('guildId', guild.id).orderBy('name', 'asc')
 
     await guild.load('announcementChannels')
 
     return view.render('pages/guild', {
       guild: guild.serialize({
-        relations: { announcementChannel: { fields: ['channelId', 'mentionRoleId'] } },
+        relations: {
+          announcementChannel: { fields: ['channelId', 'mentionRoleId', 'categoryId'] },
+        },
       }),
       roles,
       channels,
+      categories,
     })
   }
 
@@ -73,10 +79,13 @@ export default class GuildController {
       return response.forbidden('You do not have permission to add an announcement channel')
     }
 
-    const data = await createAnnouncementChannelValidator.validate(request.all())
+    const payload = request.all()
+    if (payload.categoryId === 'null') payload.categoryId = null
+    if (payload.mentionRoleId === 'null') payload.mentionRoleId = null
+    const data = await createAnnouncementChannelValidator.validate(payload)
 
     AnnouncementChannel.create({
-      guildId: !data.categoryId ? guild.id : null,
+      guildId: guild.id,
       categoryId: data.categoryId ?? null,
       channelId: data.channelId,
       mentionRoleId: data.mentionRoleId ?? null,
@@ -93,7 +102,10 @@ export default class GuildController {
       return response.forbidden('You do not have permission to update this announcement channel')
     }
 
-    const data = await updateAnnouncementChannelValidator.validate(request.all())
+    const payload = request.all()
+    if (payload.categoryId === 'null') payload.categoryId = null
+    if (payload.mentionRoleId === 'null') payload.mentionRoleId = null
+    const data = await updateAnnouncementChannelValidator.validate(payload)
 
     const announcementChannel = await AnnouncementChannel.findOrFail(params.announcementChannelId)
     if (announcementChannel.guildId !== guild.id) {
@@ -105,6 +117,9 @@ export default class GuildController {
     }
     if (data.mentionRoleId !== undefined) {
       announcementChannel.mentionRoleId = data.mentionRoleId ?? null
+    }
+    if (data.categoryId !== undefined) {
+      announcementChannel.categoryId = data.categoryId
     }
 
     await announcementChannel.save()
@@ -140,8 +155,12 @@ export default class GuildController {
       .join('book_categories', 'book_categories.id', 'category_id')
       .join('announcement_channels', (query) => {
         query
-          .on('announcement_channels.category_id', 'book_categories.id')
-          .orOn('announcement_channels.guild_id', 'book_categories.guild_id')
+          .on('announcement_channels.guild_id', 'book_categories.guild_id')
+          .andOn((q) =>
+            q
+              .on('announcement_channels.category_id', 'book_categories.id')
+              .orOnNull('announcement_channels.category_id')
+          )
       })
       .where('book_categories.guild_id', guild.id)
       .andWhereNull('publishedAt')
@@ -154,11 +173,10 @@ export default class GuildController {
 
     const channels: {
       [key: string]: {
-        mentions: {
+        categories: {
           [key: string]: {
-            categories: {
-              [key: string]: Book[]
-            }
+            mentions: string[]
+            books: Book[]
           }
         }
       }
@@ -166,23 +184,27 @@ export default class GuildController {
 
     for (const book of books) {
       const channelId = book.$extras.announcement_channel_id
-      const mentionRoleId = book.$extras.announcement_mention_role_id ?? 'null'
+      const mentionRoleId = book.$extras.announcement_mention_role_id
       const categoryName = book.$extras.category_name
 
       if (!channels[channelId]) {
         channels[channelId] = {
-          mentions: {},
-        }
-      }
-      if (!channels[channelId].mentions[mentionRoleId]) {
-        channels[channelId].mentions[mentionRoleId] = {
           categories: {},
         }
       }
-      if (!channels[channelId].mentions[mentionRoleId].categories[categoryName]) {
-        channels[channelId].mentions[mentionRoleId].categories[categoryName] = []
+      if (!channels[channelId].categories[categoryName]) {
+        channels[channelId].categories[categoryName] = {
+          mentions: [],
+          books: [],
+        }
       }
-      channels[channelId].mentions[mentionRoleId].categories[categoryName].push(book)
+      const category = channels[channelId].categories[categoryName]
+
+      if (!category.books.some((b) => b.id === book.id)) category.books.push(book)
+
+      const role = guild.discordGuild?.roles.resolve(mentionRoleId)
+      const mention = role && (role.name === '@everyone' ? '@everyone' : roleMention(mentionRoleId))
+      if (mention && category.mentions.indexOf(mention) === -1) category.mentions.push(mention)
     }
 
     const errors: string[] = []
@@ -191,41 +213,34 @@ export default class GuildController {
       const channel = guild.discordGuild?.channels.resolve(channelId)
       if (!channel || !channel.isTextBased()) continue
 
-      for (const mentionRoleId in channels[channelId].mentions) {
-        const role = guild.discordGuild?.roles.resolve(mentionRoleId)
-        const mention = !role
-          ? ''
-          : role.name === '@everyone'
-            ? '@everyone '
-            : `${roleMention(mentionRoleId)} `
-        const categories = channels[channelId].mentions[mentionRoleId].categories
-
-        let message = `# 📚 ${mention}De nouveaux livrets sont disponibles\n`
-
-        const categoryNames = Object.keys(categories).sort((a, b) => a.localeCompare(b))
-        for (const categoryName of categoryNames) {
-          const categoryBooks = categories[categoryName].sort((a, b) =>
-            a.title.localeCompare(b.title)
-          )
-          message += `## ${categoryName}\n`
-          for (const book of categoryBooks) {
-            message += book.description
-              ? `- **${book.title} :** ${book.description}\n`
-              : `- **${book.title}**\n`
-          }
+      let message = `# 📚 De nouveaux livrets sont disponibles\n`
+      const categoryNames = Object.keys(channels[channelId].categories).sort((a, b) =>
+        a.localeCompare(b)
+      )
+      for (const categoryName of categoryNames) {
+        const categoryBooks = channels[channelId].categories[categoryName].books.sort((a, b) =>
+          a.title.localeCompare(b.title)
+        )
+        message += '\n'
+        message += `## ${categoryName} `
+        message += channels[channelId].categories[categoryName].mentions.join(' ') + '\n'
+        for (const book of categoryBooks) {
+          message += book.description
+            ? `- **${book.title} :** ${book.description}\n`
+            : `- **${book.title}**\n`
         }
+      }
 
-        try {
-          await channel.send({
-            content: message,
-          })
-        } catch (error) {
-          logger.error(
-            { error },
-            `Failed to send message to channel "${channel.name}": ${error.message}`
-          )
-          errors.push(`Failed to send message to channel "${channel.name}": ${error.message}`)
-        }
+      try {
+        await channel.send({
+          content: message,
+        })
+      } catch (error) {
+        logger.error(
+          { error },
+          `Failed to send message to channel "${channel.name}": ${error.message}`
+        )
+        errors.push(`Failed to send message to channel "${channel.name}": ${error.message}`)
       }
     }
 

@@ -8,17 +8,17 @@
       class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
       <legend class="fieldset-legend">
         Autorisations
-        </legend>
+      </legend>
       @!component('components/role_select', { label: "Rôle d'administration", name: 'adminRoleId', id: 'adminRoleId',
       currentValue: guild.adminRoleId, roles, patch: true })
       @!component('components/role_select', { label: "Rôle d'accès backend", name: 'backendRoleId', id: 'backendRoleId',
       currentValue: guild.backendRoleId, roles, patch: true })
-      </fieldset>
+    </fieldset>
     <fieldset
       class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
       <legend class="fieldset-legend">
         Paramètres du stock
-        </legend>
+      </legend>
       <div>
         <label class="label">
           Seuil d'alerte de stock de livrets
@@ -26,30 +26,34 @@
         <input type="number" class="input" name="storageAlertThreshold" title="Seuil d'alerte de stock de livrets"
           value="{{ guild.storageAlertThreshold }}" data-patch />
       </div>
-      </fieldset>
-      <fieldset
-        class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
-        <legend class="fieldset-legend">
-          Notifications des demandes de livrets
-          </legend>
-          @!component('components/channel_select', { label: "Canal de notification", name: 'queryNotificationChannelId', id:
-          'queryNotificationChannelId',
-          currentValue: guild.queryNotificationChannelId, channels, patch: true })
-          @!component('components/role_select', { label: "Mention", name: 'queryNotificationMentionRoleId', id:
-          'queryNotificationMentionRoleId',
-          currentValue: guild.queryNotificationMentionRoleId, roles, patch: true })
-          </fieldset>
-          <fieldset
-            class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
-            <legend class="fieldset-legend">
+    </fieldset>
+    <fieldset
+      class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
+      <legend class="fieldset-legend">
+        Notifications des demandes de livrets
+      </legend>
+      @!component('components/channel_select', { label: "Canal de notification", name: 'queryNotificationChannelId', id:
+      'queryNotificationChannelId',
+      currentValue: guild.queryNotificationChannelId, channels, patch: true })
+      @!component('components/role_select', { label: "Mention", name: 'queryNotificationMentionRoleId', id:
+      'queryNotificationMentionRoleId',
+      currentValue: guild.queryNotificationMentionRoleId, roles, patch: true })
+    </fieldset>
+    <fieldset
+      class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
+      <legend class="fieldset-legend">
         Paramètres d'annonce
-        </legend>
-      <div class="grid grid-cols-[1fr_1fr_min-content] items-end gap-x-4 gap-y-2">
+      </legend>
+      <div class="grid grid-cols-[1fr_1fr_1fr_min-content] items-end gap-x-4 gap-y-2">
         @each(announcement_channel in guild.announcementChannels)
         @!component('components/channel_select', { label: "Canal d'annonce", name: 'channelId', channels, currentValue:
         announcement_channel.channelId, patch: `/guild/${guild.id}/announcement_channel/${announcement_channel.id}` })
         @!component('components/role_select', { label: "Mention", name: 'mentionRoleId', roles, currentValue:
         announcement_channel.mentionRoleId, patch: `/guild/${guild.id}/announcement_channel/${announcement_channel.id}`
+        })
+        @!component('components/category_select', { label: "Catégorie", noneLabel: "Toutes les catégories", name:
+        'categoryId', currentValue: announcement_channel.categoryId, categories, patch:
+        `/guild/${guild.id}/announcement_channel/${announcement_channel.id}`
         })
         <form action="{{ `/guild/${guild.id}/announcement_channel/${announcement_channel.id}?_method=DELETE` }}"
           method="post">
@@ -64,13 +68,15 @@
           <input type="hidden" name="guildId" value="{{ guild.id }}" />
           @!component('components/channel_select', { label: "Canal d'annonce", name: 'channelId', channels })
           @!component('components/role_select', { label: "Mention", name: 'mentionRoleId', roles })
+          @!component('components/category_select', { label: "Catégorie", noneLabel: "Toutes les catégories", name:
+          'categoryId', categories })
           <button type="submit" class="btn btn-circle btn-primary">
             @svg('heroicons:plus', { class: 'size-6' })
           </button>
         </form>
       </div>
-      </fieldset>
-      </div>
-      </div>
-      @endslot
+    </fieldset>
+    </div>
+    </div>
+    @endslot
 @end
