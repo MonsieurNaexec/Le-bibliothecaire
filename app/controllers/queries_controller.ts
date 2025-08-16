@@ -2,6 +2,28 @@ import Query from '#models/query'
 import { bot } from '#providers/discord_provider'
 import type { HttpContext } from '@adonisjs/core/http'
 
+type QuerySummary = {
+  id: number
+  userAvatar: string | null
+  userName: string
+  bookTitle: string
+  bookStorageAmount: number
+  bookCategory: string
+}
+
+type BookSummary = {
+  title: string
+  category: string
+  storageAmount: number
+  queries: QuerySummary[]
+}
+
+type UserSummary = {
+  name: string
+  avatar: string | null
+  queries: QuerySummary[]
+}
+
 export default class QueriesController {
   async handle({ request, view, bouncer, response }: HttpContext) {
     const guildId = request.param('guildId')
@@ -27,7 +49,7 @@ export default class QueriesController {
       .orderBy('created_at', 'asc')
       .where('book_categories.guild_id', guild.id)
 
-    const queries = dbQueries.map((query) => {
+    const queries: QuerySummary[] = dbQueries.map((query) => {
       const user = guild.discordGuild?.members.resolve(query.userId)
       return {
         id: query.id,
@@ -39,7 +61,44 @@ export default class QueriesController {
       }
     })
 
-    return view.render('pages/queries', { queries })
+    const booksSummary = Object.values(
+      queries.reduce(
+        (acc, query) => {
+          if (!acc[query.bookTitle]) {
+            acc[query.bookTitle] = {
+              title: query.bookTitle,
+              category: query.bookCategory,
+              storageAmount: query.bookStorageAmount,
+              queries: [],
+            }
+          }
+          acc[query.bookTitle].queries.push(query)
+          return acc
+        },
+        {} as Record<string, BookSummary>
+      )
+    ).sort((a, b) => {
+      const categoryComparison = a.category.localeCompare(b.category)
+      if (categoryComparison !== 0) return categoryComparison
+      return a.title.localeCompare(b.title)
+    })
+
+    const userSummary = queries.reduce(
+      (acc, query) => {
+        if (!acc[query.userName]) {
+          acc[query.userName] = {
+            name: query.userName,
+            avatar: query.userAvatar,
+            queries: [],
+          }
+        }
+        acc[query.userName].queries.push(query)
+        return acc
+      },
+      {} as Record<string, UserSummary>
+    )
+
+    return view.render('pages/queries', { userSummary, booksSummary })
   }
 
   async deleteQuery({ params, response, request }: HttpContext) {

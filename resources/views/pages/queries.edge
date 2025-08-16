@@ -3,44 +3,107 @@
 <div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
   data-toggle-container="edit-mode">
   @!component('components/guild_header', { guild: guild })
-  <ul class="list w-full max-w-xl">
-    @each(query in queries)
-    <li class="list-row items-center">
-      <div class="flex flex-col items-center">
-        @if(query.userAvatar)
-        <div class="rounded-full overflow-hidden"><img src="{{ query.userAvatar }}" alt="{{ query.userName }}" class="w-8">
-        </div>
-        <span class="text-xs font-semibold">{{ query.userName }}</span>
+  <div class="collapse collapse-arrow bg-base-200 border border-base-300 w-full max-w-xl"
+    id="collapse-query-books-summary">
+    <input type="checkbox" name="accordion-books-summary" />
+    <div class="collapse-title font-semibold">
+      <div class="flex justify-between items-center">
+        Résumé par livret
+      </div>
+    </div>
+    <div class="collapse-content flex flex-col gap-4">
+      <ul class="list">
+        @each(book in booksSummary)
+        <li class="list-row hover:bg-base-100/80 p-2">
+          <div class="list-col-grow">
+            <div>
+              {{ book.title }}
+            </div>
+            <div class="text-xs font-semibold opacity-60">
+              {{ book.category }}
+            </div>
+          </div>
+          <div class="list-col-1 text-right">
+            <span class="badge badge-soft badge-outline badge-info" title="Ce livret n'a pas encore été annoncé">
+              @svg('heroicons:chat-bubble-bottom-center-text', {class: 'size-4'})
+              {{ book.queries.length }}
+            </span>
+          </div>
+          <button class="btn btn-circle btn-sm btn-soft btn-error" type="button" title="Supprimer le livret"
+            data-edit-mode data-modal="mod_book_delete" data-modal-input-book-id="{{ book.id }}"
+            data-modal-input-book-title="{{ book.title }}" data-modal-input-book-description="{{ book.description }}">
+            @svg('heroicons:trash', {class: 'size-4'})
+          </button>
+        </li>
         @else
-        <span class="text-sm font-semibold">{{ query.userName }}</span>
+        <p class="text-sm text-gray-500">
+          Aucune demande en cours.
+        </p>
         @end
+      </ul>
+    </div>
+  </div>
+  <div class="collapse collapse-arrow bg-base-200 border border-base-300 w-full max-w-xl"
+    id="collapse-query-users-summary">
+    <input type="checkbox" name="accordion-users-summary" />
+    <div class="collapse-title font-semibold">
+      <div class="flex justify-between items-center">
+        Résumé par utilisateur
       </div>
-      <div>
-        <div class="font-semibold">{{ query.bookTitle }}</div>
-        <div class="text-xs text-gray-500">{{ query.bookCategory }}</div>
-      </div>
-      <div>
-        @!component('components/storage_badge', {
-        amount: query.bookStorageAmount,
-        })
-      </div>
-      <div class="flex flex-row gap-2">
-        <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE&confirm=1` }}" method="post">
-          {{ csrfField() }}
-          <button type="submit" class="btn btn-success btn-circle btn-soft btn-sm">
-            @svg('heroicons:check', { class: 'size-4' })
-          </button>
-        </form>
-        <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE` }}" method="post">
-          {{ csrfField() }}
-          <button type="submit" class="btn btn-error btn-circle btn-soft btn-sm">
-            @svg('heroicons:x-mark', { class: 'size-4' })
-          </button>
-        </form>
-      </div>
-    </li>
-    @end
-  </ul>
+    </div>
+    <div class="collapse-content flex flex-col gap-4">
+      <ul class="flex flex-col gap-2">
+        @each(user in userSummary)
+        <li class="p-2 rounded-md bg-base-100 border border-base-300 shadow">
+          <ul class="list w-full max-w-xl">
+            <div class="flex flex-row items-center gap-2 px-2">
+              @if(user.avatar)
+              <div class="rounded-full overflow-hidden"><img src="{{ user.avatar }}" alt="{{ user.name }}" class="size-6">
+              </div>
+              @else
+              <div class="bg-[#5865F2] rounded-full size-6 p-1">
+                @!component('components/discord_icon', { size: 4 })
+              </div>
+              @end
+              <span class="text-sm font-semibold">{{ user.name }}</span>
+            </div>
+            @each(query in user.queries)
+            <li class="list-row items-center p-1">
+              <div class="list-col-grow">
+                <div class="font-semibold">{{ query.bookTitle }}</div>
+                <div class="text-xs text-gray-500">{{ query.bookCategory }}</div>
+              </div>
+              <div>
+                @!component('components/storage_badge', {
+                amount: query.bookStorageAmount,
+                })
+              </div>
+              <div class="flex flex-row gap-2">
+                <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE&confirm=1` }}" method="post">
+                  {{ csrfField() }}
+                  <button type="submit" class="btn btn-success btn-circle btn-soft btn-sm">
+                    @svg('heroicons:check', { class: 'size-4' })
+                  </button>
+                </form>
+                <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE` }}" method="post">
+                  {{ csrfField() }}
+                  <button type="submit" class="btn btn-error btn-circle btn-soft btn-sm">
+                    @svg('heroicons:x-mark', { class: 'size-4' })
+                  </button>
+                </form>
+              </div>
+            </li>
+            @end
+            </ul>
+        </li>
+        @else
+        <p class="text-sm text-gray-500">
+          Aucune demande en cours.
+        </p>
+        @end
+        </ul>
+        </div>
+        </div>
 </div>
 @endslot
 @end
