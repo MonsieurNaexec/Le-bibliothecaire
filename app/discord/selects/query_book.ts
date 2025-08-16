@@ -2,7 +2,15 @@ import Book from '#models/book'
 import Query from '#models/query'
 import { bot } from '#providers/discord_provider'
 import logger from '@adonisjs/core/services/logger'
-import { MessageFlags, roleMention, type StringSelectMenuInteraction } from 'discord.js'
+import type { MessageActionRowComponentBuilder } from 'discord.js'
+import {
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  MessageFlags,
+  roleMention,
+  type StringSelectMenuInteraction,
+} from 'discord.js'
 import type { DiscordSelect } from '../interactions.js'
 
 const queryBook: DiscordSelect = {
@@ -30,7 +38,7 @@ const queryBook: DiscordSelect = {
 
     const member = interaction.guild?.members.resolve(interaction.user.id)
     const displayName = member?.displayName ?? interaction.user.username
-    await Query.create({
+    const query = await Query.create({
       userId: interaction.user.id,
       userName: displayName,
       bookId: book.id,
@@ -61,9 +69,20 @@ const queryBook: DiscordSelect = {
       }
     }
 
+    const cancelButton = new ButtonBuilder()
+      .setCustomId(`cancel_query:${query.id}`)
+      .setLabel('Annuler')
+      .setStyle(ButtonStyle.Danger)
+    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(cancelButton)
+
     await interaction.reply({
       content: `## :white_check_mark: La demande pour le livret **${book.title}** a bien été enregistrée!`,
+      components: [row],
       flags: MessageFlags.Ephemeral,
+    })
+    await interaction.user.send({
+      content: `## :white_check_mark: La demande pour le livret **${book.title}** a bien été enregistrée!`,
+      components: [row],
     })
   },
 }

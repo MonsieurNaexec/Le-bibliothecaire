@@ -42,7 +42,7 @@ export default class QueriesController {
     return view.render('pages/queries', { queries })
   }
 
-  async deleteQuery({ params, response }: HttpContext) {
+  async deleteQuery({ params, response, request }: HttpContext) {
     const query = await Query.query()
       .join('books', 'books.id', 'queries.book_id')
       .join('book_categories', 'book_categories.id', 'books.category_id')
@@ -53,9 +53,11 @@ export default class QueriesController {
 
     if (!query) return response.redirect().back()
 
-    await query.load('book')
-    query.book.storageAmount = query.book.storageAmount - 1
-    await query.book.save()
+    if (request.input('confirm')) {
+      await query.load('book')
+      query.book.storageAmount = query.book.storageAmount - 1
+      await query.book.save()
+    }
 
     await query.delete()
     return response.redirect().back()

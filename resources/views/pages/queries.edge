@@ -23,12 +23,18 @@
         @!component('components/storage_badge', {
         amount: query.bookStorageAmount,
         })
-        </div>
-        <div>
-        <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE` }}" method="post">
+      </div>
+      <div class="flex flex-row gap-2">
+        <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE&confirm=1` }}" method="post">
           {{ csrfField() }}
           <button type="submit" class="btn btn-success btn-circle btn-soft btn-sm">
             @svg('heroicons:check', { class: 'size-4' })
+          </button>
+        </form>
+        <form action="{{ `/guild/${guild.id}/query/${query.id}?_method=DELETE` }}" method="post">
+          {{ csrfField() }}
+          <button type="submit" class="btn btn-error btn-circle btn-soft btn-sm">
+            @svg('heroicons:x-mark', { class: 'size-4' })
           </button>
         </form>
       </div>
