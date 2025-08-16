@@ -50,9 +50,10 @@
           data-modal-input-book-storage-amount="{{ book.storageAmount }}">
           <div class="list-col-grow">
             <div>
-              {{ book.title }}
+              {{ book.title }}<span class="text-xs text-base-content/50">
+                &bull; {{ book.createdAt.toLocaleString({ day: '2-digit', month: 'short', year: 'numeric' }) }}</span>
             </div>
-            <div class="text-xs font-semibold opacity-60">
+            <div class="text-xs font-semibold opacity-70">
               {{ book.description }}
             </div>
           </div>
@@ -90,9 +91,9 @@
           </button>
         </div>
       </form>
-      </div>
-      </div>
-      @end
+    </div>
+    </div>
+    @end
 
   <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
     @if(categories.some(category => category.books.some(book => book.publishedAt === null)))
