@@ -20,6 +20,7 @@ const queryBook: DiscordSelect = {
       .first()
 
     if (!book) {
+      logger.warn(`Book not found for guild ${interaction.guildId} with book ID ${bookId}`)
       await interaction.reply({
         content: "## :person_shrugging: Le livret demandé n'a pas été trouvé.",
         flags: MessageFlags.Ephemeral,

@@ -1,12 +1,6 @@
 import BookCategory from '#models/book_category'
-import type { MessageActionRowComponentBuilder } from 'discord.js'
-import {
-  ActionRowBuilder,
-  MessageFlags,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
-  type StringSelectMenuInteraction,
-} from 'discord.js'
+import { createBookSelectRow } from '#providers/discord_provider'
+import { MessageFlags, type StringSelectMenuInteraction } from 'discord.js'
 import type { DiscordSelect } from '../interactions.js'
 
 const queryCategory: DiscordSelect = {
@@ -19,7 +13,6 @@ const queryCategory: DiscordSelect = {
     const category = await BookCategory.query()
       .where('guildId', interaction.guildId)
       .andWhere('id', categoryId)
-      .preload('books')
       .first()
     if (!category) {
       await interaction.reply({
@@ -29,29 +22,15 @@ const queryCategory: DiscordSelect = {
       return
     }
 
-    const select = new StringSelectMenuBuilder()
-      .setCustomId('query_book')
-      .setPlaceholder('Sélectionner un livret')
+    const row = await createBookSelectRow(interaction.guildId, 'query_book', false, category.id)
 
-    category.books.forEach((book) => {
-      const option = new StringSelectMenuOptionBuilder()
-        .setLabel(book.title)
-        .setValue(book.id.toString())
-      if (book.description && book.description.length > 0) {
-        option.setDescription(book.description)
-      }
-      select.addOptions(option)
-    })
-
-    if (category.books.length === 0) {
+    if (!row) {
       await interaction.reply({
         content: '## :person_shrugging: Aucun livret disponible dans cette catégorie.',
         flags: MessageFlags.Ephemeral,
       })
       return
     }
-
-    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select)
 
     await interaction.reply({
       content: `## Demander un livret dans la catégorie \`${category.name}\`:`,

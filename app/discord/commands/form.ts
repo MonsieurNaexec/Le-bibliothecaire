@@ -1,12 +1,8 @@
-import BookCategory from '#models/book_category'
-import type { MessageActionRowComponentBuilder } from 'discord.js'
+import { createCategorySelectRow } from '#providers/discord_provider'
 import {
-  ActionRowBuilder,
   InteractionContextType,
   MessageFlags,
   PermissionFlagsBits,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
   type CommandInteraction,
   type SlashCommandBuilder,
 } from 'discord.js'
@@ -23,22 +19,17 @@ const form: DiscordCommand = {
   },
 
   async execute(interaction: CommandInteraction) {
-    const categories = await BookCategory.findManyBy({ guildId: interaction.guildId })
     if (!interaction.guildId) return
 
-    const select = new StringSelectMenuBuilder()
-      .setCustomId('form_create')
-      .setPlaceholder('Choisir les catégories')
-      .setMinValues(1)
-      .setMaxValues(Math.min(categories.length, 25))
+    const row = await createCategorySelectRow(interaction.guildId, 'form_create', true)
 
-    categories.forEach((category) => {
-      select.addOptions(
-        new StringSelectMenuOptionBuilder().setLabel(category.name).setValue(category.id.toString())
-      )
-    })
-
-    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select)
+    if (!row) {
+      await interaction.reply({
+        content: '## :warning: Aucune catégorie créée pour ce serveur.',
+        flags: MessageFlags.Ephemeral,
+      })
+      return
+    }
 
     await interaction.reply({
       content: '## :clipboard: Création du formulaire:',

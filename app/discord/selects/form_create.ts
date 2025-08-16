@@ -1,12 +1,5 @@
-import BookCategory from '#models/book_category'
-import type { MessageActionRowComponentBuilder } from 'discord.js'
-import {
-  ActionRowBuilder,
-  MessageFlags,
-  StringSelectMenuBuilder,
-  StringSelectMenuOptionBuilder,
-  type StringSelectMenuInteraction,
-} from 'discord.js'
+import { createCategorySelectRow } from '#providers/discord_provider'
+import { MessageFlags, type StringSelectMenuInteraction } from 'discord.js'
 import type { DiscordSelect } from '../interactions.js'
 
 const formCreate: DiscordSelect = {
@@ -15,29 +8,21 @@ const formCreate: DiscordSelect = {
     if (!interaction.guildId) return
     const channel = interaction.channel
     if (!channel?.isSendable()) return
-    const categories = await BookCategory.query()
-      .where('guildId', interaction.guildId)
-      .andWhereIn('id', interaction.values)
 
-    const select = new StringSelectMenuBuilder()
-      .setCustomId('query_category')
-      .setPlaceholder('Sélectionner une catégorie')
+    const row = await createCategorySelectRow(
+      interaction.guildId,
+      'query_category',
+      false,
+      interaction.values
+    )
 
-    categories.forEach((category) => {
-      select.addOptions(
-        new StringSelectMenuOptionBuilder().setLabel(category.name).setValue(category.id.toString())
-      )
-    })
-
-    if (select.options.length === 0) {
+    if (!row) {
       await interaction.reply({
         content: '## :warning: Aucune catégorie créée pour ce serveur.',
         flags: MessageFlags.Ephemeral,
       })
       return
     }
-
-    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(select)
 
     await interaction.reply({
       content:
