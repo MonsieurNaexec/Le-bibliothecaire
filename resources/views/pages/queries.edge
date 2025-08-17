@@ -56,7 +56,7 @@
         @each(user in userSummary)
         <li class="p-2 rounded-md bg-base-100 border border-base-300 shadow">
           <ul class="list w-full max-w-xl">
-            <div class="flex flex-row items-center gap-2 px-2">
+            <div class="flex flex-row flex-wrap items-center gap-2 px-2">
               @if(user.avatar)
               <div class="rounded-full overflow-hidden"><img src="{{ user.avatar }}" alt="{{ user.name }}" class="size-6">
               </div>
@@ -66,6 +66,9 @@
               </div>
               @end
               <span class="text-sm font-semibold">{{ user.name }}</span>
+              @each(groupRole in user.groupRoles)
+              <span class="badge badge-soft badge-primary">{{ groupRole }}</span>
+              @end
             </div>
             @each(query in user.queries)
             <li class="list-row items-center p-1">

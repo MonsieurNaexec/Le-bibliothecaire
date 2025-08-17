@@ -63,8 +63,9 @@ const queryBook: DiscordSelect = {
           : role.name === '@everyone'
             ? '@everyone '
             : `${roleMention(role.id)} `
+        const roles = await guildConfig.getUserGroupRoles(interaction.user.id)
         await notificationChannel.send({
-          content: `${mention}**${displayName}** a demandé le livret **${book.title}** *(${book.$extras.category_name})*`,
+          content: `${mention}**${displayName}** *(${roles.join(', ')})* a demandé le livret **${book.title}** *(${book.$extras.category_name})*`,
         })
       }
     }

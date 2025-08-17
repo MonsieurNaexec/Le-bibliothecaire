@@ -1,6 +1,7 @@
 import AnnouncementChannel from '#models/announcement_channel'
 import Book from '#models/book'
 import BookCategory from '#models/book_category'
+import GroupRole from '#models/group_role'
 import { bot } from '#providers/discord_provider'
 import {
   createAnnouncementChannelValidator,
@@ -20,8 +21,12 @@ export default class GuildController {
       return response.forbidden('You do not have permission to access this guild settings')
     }
 
-    const roles = guild.discordGuild?.roles.cache.toJSON()
-    const channels = guild.discordGuild?.channels.cache
+    if (!guild.discordGuild) {
+      return response.notFound('Guild not found in Discord')
+    }
+
+    const roles = guild.discordGuild.roles.cache.toJSON()
+    const channels = guild.discordGuild.channels.cache
       .toJSON()
       .filter(
         (channel) =>
@@ -33,6 +38,18 @@ export default class GuildController {
     const categories = await BookCategory.query().where('guildId', guild.id).orderBy('name', 'asc')
 
     await guild.load('announcementChannels')
+    await guild.load('groupRoles')
+
+    const groupRoles: { id: number; name: string }[] = []
+    for (const groupRole of guild.groupRoles) {
+      const role = guild.discordGuild.roles.resolve(groupRole.roleId)
+      if (role) {
+        groupRoles.push({
+          id: groupRole.id,
+          name: role.name,
+        })
+      }
+    }
 
     return view.render('pages/guild', {
       guild: guild.serialize({
@@ -43,6 +60,7 @@ export default class GuildController {
       roles,
       channels,
       categories,
+      groupRoles,
     })
   }
 
@@ -140,6 +158,44 @@ export default class GuildController {
     }
 
     await announcementChannel.delete()
+    return response.redirect().back()
+  }
+
+  async addGroupRole({ request, response, params, bouncer }: HttpContext) {
+    const guild = await bot.getGuild(params.guildId)
+    if (!guild) return response.notFound('Guild not found or not joined')
+
+    if (await bouncer.denies('accessGuildAdministration', guild.id)) {
+      return response.forbidden('You do not have permission to add a group role')
+    }
+
+    const roleId = request.input('roleId')
+    if (!roleId) {
+      return response.redirect().back()
+    }
+
+    const groupRole = new GroupRole()
+    groupRole.guildId = guild.id
+    groupRole.roleId = roleId
+    await groupRole.save()
+
+    return response.redirect().back()
+  }
+
+  async deleteGroupRole({ params, response, bouncer }: HttpContext) {
+    const guild = await bot.getGuild(params.guildId)
+    if (!guild) return response.notFound('Guild not found or not joined')
+
+    if (await bouncer.denies('accessGuildAdministration', guild.id)) {
+      return response.forbidden('You do not have permission to delete this group role')
+    }
+
+    const groupRole = await GroupRole.findOrFail(params.groupRoleId)
+    if (groupRole.guildId !== guild.id) {
+      return response.redirect().back()
+    }
+
+    await groupRole.delete()
     return response.redirect().back()
   }
 

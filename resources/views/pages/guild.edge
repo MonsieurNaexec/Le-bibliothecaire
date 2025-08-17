@@ -76,7 +76,37 @@
         </form>
       </div>
     </fieldset>
-    </div>
-    </div>
-    @endslot
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-col gap-4 justify-evenly">
+      <legend class="fieldset-legend">
+        Rôles de groupe
+      </legend>
+      <div class="flex flex-row gap-4">
+        @each(groupRole in groupRoles)
+        <div class="join">
+          <div class="join-item btn btn-active cursor-default">
+            {{ groupRole.name }}
+          </div>
+          <form action="{{ `/guild/${guild.id}/group_role/${groupRole.id}?_method=DELETE` }}" method="post">
+            {{ csrfField() }}
+            <button type="submit" class="btn btn-error join-item">
+              @svg('heroicons:trash', { class: 'size-4' })
+            </button>
+          </form>
+        </div>
+        @end
+      </div>
+      <div class="flex flex-row gap-2 justify-center items-end">
+        <form action="{{guild.id}}/group_role" method="post" class="contents">
+          {{ csrfField() }}
+          <input type="hidden" name="guildId" value="{{ guild.id }}" />
+          @!component('components/role_select', { label: "Groupe", name: 'roleId', roles })
+          <button type="submit" class="btn btn-circle btn-primary">
+            @svg('heroicons:plus', { class: 'size-6' })
+          </button>
+        </form>
+      </div>
+    </fieldset>
+  </div>
+  </div>
+  @endslot
 @end

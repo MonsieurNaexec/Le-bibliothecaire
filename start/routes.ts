@@ -41,6 +41,11 @@ router
           GuildController,
           'deleteAnnouncementChannel',
         ])
+        router.post('/guild/:guildId/group_role', [GuildController, 'addGroupRole'])
+        router.delete('/guild/:guildId/group_role/:groupRoleId', [
+          GuildController,
+          'deleteGroupRole',
+        ])
         router.post('/guild/:guildId/publish', [GuildController, 'publish'])
 
         router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')

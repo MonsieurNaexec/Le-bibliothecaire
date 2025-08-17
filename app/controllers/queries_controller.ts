@@ -4,6 +4,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 type QuerySummary = {
   id: number
+  userId: string
   userAvatar: string | null
   userName: string
   bookTitle: string
@@ -21,6 +22,7 @@ type BookSummary = {
 type UserSummary = {
   name: string
   avatar: string | null
+  groupRoles: string[]
   queries: QuerySummary[]
 }
 
@@ -31,6 +33,7 @@ export default class QueriesController {
     if (!guild) {
       return view.render('errors.not_found', { message: 'Guild not found or not joined' })
     }
+    guild.load('groupRoles')
     if (await bouncer.denies('accessGuildBackend', guild.id)) {
       return response.forbidden('You do not have permission to access this guild queries')
     }
@@ -53,6 +56,7 @@ export default class QueriesController {
       const user = guild.discordGuild?.members.resolve(query.userId)
       return {
         id: query.id,
+        userId: query.userId,
         userAvatar: user?.avatarURL() ?? user?.user.avatarURL() ?? null,
         userName: user?.displayName ?? query.userName,
         bookTitle: query.$extras.book_title,
@@ -83,20 +87,19 @@ export default class QueriesController {
       return a.title.localeCompare(b.title)
     })
 
-    const userSummary = queries.reduce(
-      (acc, query) => {
-        if (!acc[query.userName]) {
-          acc[query.userName] = {
-            name: query.userName,
-            avatar: query.userAvatar,
-            queries: [],
-          }
+    const userSummary: Record<string, UserSummary> = {}
+
+    for (const query of queries) {
+      if (!userSummary[query.userName]) {
+        userSummary[query.userName] = {
+          name: query.userName,
+          avatar: query.userAvatar,
+          groupRoles: await guild.getUserGroupRoles(query.userId),
+          queries: [],
         }
-        acc[query.userName].queries.push(query)
-        return acc
-      },
-      {} as Record<string, UserSummary>
-    )
+      }
+      userSummary[query.userName].queries.push(query)
+    }
 
     return view.render('pages/queries', { userSummary, booksSummary })
   }
