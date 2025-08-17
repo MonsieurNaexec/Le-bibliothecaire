@@ -64,8 +64,12 @@ const queryBook: DiscordSelect = {
             ? '@everyone '
             : `${roleMention(role.id)} `
         const roles = await guildConfig.getUserGroupRoles(interaction.user.id)
+        let message = `${mention}**${displayName}** *(${roles.join(', ')})* a demandé le livret **${book.title}** *(${book.$extras.category_name})*`
+        if (book.storageAmount <= 0) message += '\n:stop_sign: Plus de livret en stock!'
+        else if (book.storageAmount <= guildConfig.storageAlertThreshold)
+          message += `\n:warning: Plus que ${book.storageAmount} livrets en stock`
         await notificationChannel.send({
-          content: `${mention}**${displayName}** *(${roles.join(', ')})* a demandé le livret **${book.title}** *(${book.$extras.category_name})*`,
+          content: message,
         })
       }
     }
