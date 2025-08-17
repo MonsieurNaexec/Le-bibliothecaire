@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
   modalTriggers.forEach((trigger) => {
     trigger.addEventListener('click', (event) => {
       event.preventDefault()
+      event.stopPropagation()
       const modalId = (trigger as HTMLElement).dataset.modal
       const modalInputs = Object.entries((trigger as HTMLElement).dataset)
         .filter(([key]) => key.startsWith('modalInput'))
