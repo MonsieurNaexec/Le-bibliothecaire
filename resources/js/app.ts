@@ -108,16 +108,26 @@ document.addEventListener('DOMContentLoaded', () => {
   incrementButtons.forEach((button) => {
     button.addEventListener('click', () => {
       if (!button.dataset.increment) return
-      const [targetId, amount] = button.dataset.increment.split(',')
-      const target = document.getElementById(targetId) as HTMLElement | null
-      if (!target) return
-      const currentValue = parseInt(target.innerText) || 0
+      const [absoluteTargetId, relativeTargetId, amount, ignore] =
+        button.dataset.increment.split(',')
+      const relativeTarget = document.getElementById(relativeTargetId) as HTMLElement | null
+      const absoluteTarget = document.getElementById(absoluteTargetId) as HTMLInputElement | null
+      if (!relativeTarget || !absoluteTarget) return
+      const currentRelativeValue = parseInt(relativeTarget.innerText) || 0
+      const currentAbsoluteValue = parseInt(absoluteTarget.value) || 0
       const amountValue = parseInt(amount)
-      const newValue =
+
+      const newAbsoluteValue =
         amount.startsWith('+') || amount.startsWith('-')
-          ? currentValue + amountValue
+          ? Math.max(currentAbsoluteValue + amountValue, 0)
           : amountValue || 0
-      target.innerText = `${newValue < 0 ? '' : '+'}${newValue}`
+      if (ignore !== 'ignore') absoluteTarget.value = newAbsoluteValue.toString()
+
+      const newRelativeValue =
+        amount.startsWith('+') || amount.startsWith('-')
+          ? currentRelativeValue + (newAbsoluteValue - currentAbsoluteValue)
+          : amountValue || 0
+      relativeTarget.innerText = `${newRelativeValue < 0 ? '' : '+'}${newRelativeValue}`
     })
   })
 

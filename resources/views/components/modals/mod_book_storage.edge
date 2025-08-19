@@ -15,13 +15,11 @@
           </span>
         </div>
         <button class="btn btn-circle btn-soft btn-sm" type="button" title="Diminuer le stock"
-          onclick="mod_book_storage_BookStorageAmount.value = Math.max(0, parseInt(mod_book_storage_BookStorageAmount.value) - 1);"
-          data-increment="mod_book_storage_AmountDiff,-1">
+          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,-1">
           @svg('heroicons:minus', {class: 'size-4'})
         </button>
         <button class="btn btn-circle btn-soft btn-sm" type="button" title="Augmenter le stock"
-          onclick="mod_book_storage_BookStorageAmount.value = parseInt(mod_book_storage_BookStorageAmount.value) + 1;"
-          data-increment="mod_book_storage_AmountDiff,+1">
+          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,+1">
           @svg('heroicons:plus', {class: 'size-4'})
         </button>
       </div>
@@ -29,8 +27,8 @@
       <div class="modal-action">
         {{ csrfField() }}
         <button class="btn btn-primary" type="submit"
-          data-increment="mod_book_storage_AmountDiff,0">Enregistrer</button>
-        <button class="btn" formmethod="dialog" data-increment="mod_book_storage_AmountDiff,0">Annuler</button>
+          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Enregistrer</button>
+        <button class="btn" formmethod="dialog" data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Annuler</button>
       </div>
     </div>
   </form>
