@@ -120,4 +120,97 @@ document.addEventListener('DOMContentLoaded', () => {
       target.innerText = `${newValue < 0 ? '' : '+'}${newValue}`
     })
   })
+
+  /**
+   * Handle tag selection
+   */
+  const taggedHTMLElements = document.querySelectorAll('[data-tags]') as NodeListOf<HTMLElement>
+  const tags = new Set<string>()
+  const taggedElements: { element: HTMLElement; tags: Set<string> }[] = []
+  taggedHTMLElements.forEach((element) => {
+    const tagsData = element.dataset.tags
+    if (!tagsData) return
+    const elementTags = new Set(JSON.parse(tagsData) as string[])
+    taggedElements.push({ element, tags: elementTags })
+    elementTags.forEach((tag) => tags.add(tag))
+  })
+  const tagSelects = document.querySelectorAll(
+    'select[data-tags-select]'
+  ) as NodeListOf<HTMLSelectElement>
+  tagSelects.forEach((select) => {
+    tags.forEach((tag) => {
+      const option = document.createElement('option')
+      option.value = tag
+      option.innerText = tag
+      if (select) select.appendChild(option)
+    })
+    select.addEventListener('change', (event) => {
+      const target = event.target as HTMLSelectElement
+      const selectedValue = target.value
+      taggedElements.forEach(({ element, tags }) => {
+        if (selectedValue === 'null' || tags.has(selectedValue)) {
+          element.classList.remove('hidden')
+        } else {
+          element.classList.add('hidden')
+        }
+      })
+    })
+  })
+  const tagsInputs = document.querySelectorAll('[data-tags-input]') as NodeListOf<HTMLDivElement>
+  tagsInputs.forEach((inputContainer) => {
+    const input = inputContainer.querySelector('input[type="hidden"]') as HTMLInputElement
+    const textInput = inputContainer.querySelector(
+      'input[data-tags-text-input]'
+    ) as HTMLInputElement
+    const addButton = inputContainer.querySelector(
+      'button[data-tags-add-button]'
+    ) as HTMLButtonElement
+    const tagList = inputContainer.querySelector('[data-tag-list]') as HTMLDivElement
+    const thisTags = new Set<string>(JSON.parse(input.value || '[]') as string[])
+    const template = inputContainer.querySelector('template') as HTMLTemplateElement
+
+    const updateTagList = () => {
+      tagList.innerHTML = ''
+      thisTags.forEach((tag) => {
+        const tagElement = template.content.cloneNode(true) as HTMLSpanElement
+        ;(tagElement.querySelector('span[data-tag-label]') as HTMLSpanElement).innerText = tag
+        tagElement.querySelector('button')?.addEventListener('click', () => {
+          thisTags.delete(tag)
+          input.value = JSON.stringify(Array.from(thisTags))
+          input.dispatchEvent(new Event('change'))
+        })
+        tagList.appendChild(tagElement)
+      })
+    }
+
+    input.addEventListener('change', () => {
+      console.log('Input changed:', input.value)
+      const tagsArray = JSON.parse(input.value || '[]') as string[]
+      thisTags.clear()
+      tagsArray.forEach((tag) => thisTags.add(tag))
+      updateTagList()
+    })
+
+    const addTag = () => {
+      const tag = textInput.value.trim()
+      if (!tag) return
+      thisTags.add(tag)
+      textInput.value = ''
+      input.value = JSON.stringify(Array.from(thisTags))
+      input.dispatchEvent(new Event('change'))
+    }
+
+    textInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault()
+        addTag()
+      }
+    })
+    addButton.addEventListener('click', (event) => {
+      event.preventDefault()
+      if (textInput.value.trim()) {
+        addTag()
+      }
+    })
+  })
 })

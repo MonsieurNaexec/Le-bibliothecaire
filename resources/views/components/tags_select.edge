@@ -1,0 +1,19 @@
+<div data-tags-input>
+  <input type="hidden" name="tags" value="[]" {{{ id ? `id="${html.escape(id)}" ` : '' }}} />
+  <div class="flex flex-wrap gap-2 pb-2" data-tag-list>
+    <template>
+      <span class="badge badge-accent badge-soft badge-outline" data-tag-item>
+        <span data-tag-label></span>
+        <button type="button" class="cursor-pointer">
+          @svg('heroicons:x-mark', {class: 'size-4'})
+        </button>
+      </span>
+    </template>
+  </div>
+  <div class="flex items-center gap-2">
+    <input tabindex="0" class="input input-bordered grow" placeholder="Ajouter un tag" data-tags-text-input />
+    <button class="btn btn-circle btn-soft btn-success" type="button" data-tags-add-button>
+      @svg('heroicons:plus', {class: 'size-4'})
+    </button>
+  </div>
+</div>

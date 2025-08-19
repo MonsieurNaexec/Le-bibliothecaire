@@ -25,6 +25,8 @@ export default class StorageController {
   async addCategory({ request, response, bouncer }: HttpContext) {
     const guildId = request.param('guildId')
     const name = request.input('categoryName')
+    const tagsInput = request.input('tags', '[]')
+    const tags = JSON.parse(tagsInput) as string[]
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to  this guild')
@@ -34,7 +36,7 @@ export default class StorageController {
       return response.badRequest('Category name is required')
     }
 
-    await BookCategory.create({ name, guildId })
+    await BookCategory.create({ name, guildId, tags })
     return response.redirect().back()
   }
 
@@ -42,6 +44,8 @@ export default class StorageController {
     const guildId = request.param('guildId')
     const categoryId = request.input('categoryId')
     const name = request.input('categoryName')
+    const tagsInput = request.input('tags', '[]')
+    const tags = JSON.parse(tagsInput) as string[]
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to access this guild storage')
@@ -57,6 +61,7 @@ export default class StorageController {
     }
 
     category.name = name
+    category.tags = tags
     await category.save()
     return response.redirect().back()
   }
