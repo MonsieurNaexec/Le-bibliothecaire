@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const taggedHTMLElements = document.querySelectorAll('[data-tags]') as NodeListOf<HTMLElement>
   const tags = new Set<string>()
   const taggedElements: { element: HTMLElement; tags: Set<string> }[] = []
+  const storedTag = localStorage.getItem('selectedTag') || 'null'
   taggedHTMLElements.forEach((element) => {
     const tagsData = element.dataset.tags
     if (!tagsData) return
@@ -164,7 +165,10 @@ document.addEventListener('DOMContentLoaded', () => {
           element.classList.add('hidden')
         }
       })
+      localStorage.setItem('selectedTag', selectedValue)
     })
+    select.value = storedTag
+    select.dispatchEvent(new Event('change'))
   })
   const tagsInputs = document.querySelectorAll('[data-tags-input]') as NodeListOf<HTMLDivElement>
   tagsInputs.forEach((inputContainer) => {
