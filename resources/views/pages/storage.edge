@@ -43,7 +43,7 @@
     <div class="collapse-content flex flex-col gap-4">
       <div class="flex flex-row justify-end gap-2 w-full px-4" data-edit-mode>
         <button class="btn btn-circle btn-sm btn-soft btn-primary" type="button" title="Modifier la catégorie"
-          onclick="field_edit_category_name.value= '{{ category.name }}'; field_edit_category_id.value = '{{ category.id }}'; field_edit_category_tags.value = {{ JSON.stringify(JSON.stringify(category.tags)) }}; field_edit_category_tags.dispatchEvent(new Event('change')); mod_category_edit.showModal();">
+          onclick="field_edit_category_name.value= '{{ category.name }}'; field_edit_category_id.value = '{{ category.id }}'; field_edit_category_tags.value = {{ JSON.stringify(JSON.stringify(category.tags)) }}; field_edit_category_tags.dispatchEvent(new Event('change')); mod_category_edit_QueryMentionRoleId.value = '{{ category.queryNotificationMentionRoleId }}'; mod_category_edit.showModal();">
           @svg('heroicons:pencil-square', {class: 'size-4'})
         </button>
         <button class="btn btn-circle btn-sm btn-soft btn-error" type="button" title="Supprimer la catégorie"
@@ -120,8 +120,8 @@
       <span class="hidden md:inline">Ajouter une catégorie</span>
     </button>
   </div>
-  @!component('components/modals/mod_category_add')
-  @!component('components/modals/mod_category_edit')
+  @!component('components/modals/mod_category_add', { roles })
+  @!component('components/modals/mod_category_edit', { roles })
   @!component('components/modals/mod_category_delete')
   @!component('components/modals/mod_book_delete')
   @!component('components/modals/mod_book_storage')

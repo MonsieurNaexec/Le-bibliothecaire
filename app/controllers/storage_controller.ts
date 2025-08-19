@@ -14,12 +14,13 @@ export default class StorageController {
       return response.forbidden('You do not have permission to access this guild storage')
     }
 
+    const roles = guild.discordGuild?.roles.cache.toJSON()
     const categories = await BookCategory.query()
       .where('guildId', guildId)
       .orderBy('name', 'asc')
       .preload('books', (q) => q.orderBy('title', 'asc'))
 
-    return view.render('pages/storage', { categories, guild: guild.serialize() })
+    return view.render('pages/storage', { categories, guild: guild.serialize(), roles })
   }
 
   async addCategory({ request, response, bouncer }: HttpContext) {
@@ -27,6 +28,7 @@ export default class StorageController {
     const name = request.input('categoryName')
     const tagsInput = request.input('tags', '[]')
     const tags = JSON.parse(tagsInput) as string[]
+    const queryMentionRoleId = request.input('queryMentionRoleId', null)
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to  this guild')
@@ -36,7 +38,12 @@ export default class StorageController {
       return response.badRequest('Category name is required')
     }
 
-    await BookCategory.create({ name, guildId, tags })
+    await BookCategory.create({
+      name,
+      guildId,
+      tags,
+      queryNotificationMentionRoleId: queryMentionRoleId || null,
+    })
     return response.redirect().back()
   }
 
@@ -46,6 +53,7 @@ export default class StorageController {
     const name = request.input('categoryName')
     const tagsInput = request.input('tags', '[]')
     const tags = JSON.parse(tagsInput) as string[]
+    const queryMentionRoleId = request.input('queryMentionRoleId', null)
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to access this guild storage')
@@ -62,6 +70,7 @@ export default class StorageController {
 
     category.name = name
     category.tags = tags
+    category.queryNotificationMentionRoleId = queryMentionRoleId || null
     await category.save()
     return response.redirect().back()
   }

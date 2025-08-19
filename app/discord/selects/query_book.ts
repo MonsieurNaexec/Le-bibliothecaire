@@ -24,7 +24,11 @@ const queryBook: DiscordSelect = {
       .join('book_categories', 'book_categories.id', 'books.category_id')
       .where('books.id', bookId)
       .andWhere('book_categories.guild_id', interaction.guildId)
-      .select('books.*', 'book_categories.name as category_name')
+      .select(
+        'books.*',
+        'book_categories.name as category_name',
+        'book_categories.query_notification_mention_role_id as category_mention_role_id'
+      )
       .first()
 
     if (!book) {
@@ -54,15 +58,26 @@ const queryBook: DiscordSelect = {
         guildConfig.queryNotificationChannelId
       )
       if (notificationChannel?.isTextBased()) {
-        const role =
+        const guildRole =
           interaction.guild && guildConfig.queryNotificationMentionRoleId
             ? interaction.guild.roles.resolve(guildConfig.queryNotificationMentionRoleId)
             : null
-        const mention = !role
+        const guildMention = !guildRole
           ? ''
-          : role.name === '@everyone'
+          : guildRole.name === '@everyone'
             ? '@everyone '
-            : `${roleMention(role.id)} `
+            : `${roleMention(guildRole.id)} `
+        const categoryRole =
+          interaction.guild && book.$extras.category_mention_role_id
+            ? interaction.guild.roles.resolve(book.$extras.category_mention_role_id)
+            : null
+        const categoryMention = !categoryRole
+          ? ''
+          : categoryRole.name === '@everyone'
+            ? '@everyone '
+            : `${roleMention(categoryRole.id)} `
+        const mention = [guildMention, categoryMention].filter((m) => m.length > 0).join(' ')
+
         const roles = await guildConfig.getUserGroupRoles(interaction.user.id)
         let message = `${mention}**${displayName}** *(${roles.join(', ')})* a demandé le livret **${book.title}** *(${book.$extras.category_name})*`
         if (book.storageAmount <= 0) message += '\n:stop_sign: Plus de livret en stock!'

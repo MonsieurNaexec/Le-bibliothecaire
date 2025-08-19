@@ -43,4 +43,7 @@ export default class BookCategory extends BaseModel {
     },
   })
   declare tags: string[]
+
+  @column()
+  declare queryNotificationMentionRoleId: string | null
 }
