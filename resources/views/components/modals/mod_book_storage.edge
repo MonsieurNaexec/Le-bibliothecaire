@@ -23,6 +23,13 @@
           @svg('heroicons:plus', {class: 'size-4'})
         </button>
       </div>
+      <div class="form-control mt-2" data-edit-mode>
+        <label for="mod_book_storage_BookUrl" class="label cursor-pointer text-sm">
+          <span class="label-text">URL du livret</span>
+        </label>
+        <input type="url" name="url" id="mod_book_storage_BookUrl" class="input input-bordered w-full"
+          placeholder="https://drive.google.com/livret.pdf" />
+      </div>
       <input type="hidden" name="bookId" id="mod_book_storage_BookId" />
       <div class="modal-action">
         {{ csrfField() }}

@@ -98,7 +98,9 @@ export default class StorageController {
 
   async addBook({ request, response, bouncer }: HttpContext) {
     const guildId = request.param('guildId')
-    const { categoryId, title, description } = await createBookValidator.validate(request.all())
+    const { categoryId, title, description, url } = await createBookValidator.validate(
+      request.all()
+    )
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to access this guild storage')
@@ -109,14 +111,16 @@ export default class StorageController {
       return response.notFound('Category not found or does not belong to this guild')
     }
 
-    await category.related('books').create({ title, description })
+    await category.related('books').create({ title, description, url })
     return response.redirect().back()
   }
 
   async editBook({ request, response, bouncer }: HttpContext) {
     const guildId = request.param('guildId')
     const bookId = request.input('bookId')
-    const { title, description, storageAmount } = await editBookValidator.validate(request.all())
+    const { title, description, storageAmount, url } = await editBookValidator.validate(
+      request.all()
+    )
 
     if (await bouncer.denies('accessGuildBackend', guildId)) {
       return response.forbidden('You do not have permission to access this guild storage')
@@ -133,6 +137,7 @@ export default class StorageController {
     if (title) book.title = title
     if (description) book.description = description
     if (storageAmount !== undefined) book.storageAmount = storageAmount
+    if (url !== undefined) book.url = url
     await book.save()
     return response.redirect().back()
   }

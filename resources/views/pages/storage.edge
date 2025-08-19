@@ -23,7 +23,7 @@
           @each(tag in category.tags)
           <span class="badge badge-accent badge-soft badge-outline">{{ tag }}</span>
           @end
-          </div>
+        </div>
         @let([min,max] = category.books.reduce((acc, book) => [Math.min(acc[0], book.storageAmount), Math.max(acc[1],
         book.storageAmount)], [Infinity, -Infinity]))
         <div class="flex flex-row-reverse justify-start items-center flex-wrap gap-2">
@@ -55,7 +55,7 @@
         @each(book in category.books)
         <li class="list-row hover:bg-base-100/80" data-modal="mod_book_storage" data-modal-input-book-id="{{ book.id }}"
           data-modal-input-book-title="{{ book.title }}" data-modal-input-book-description="{{ book.description }}"
-          data-modal-input-book-storage-amount="{{ book.storageAmount }}">
+          data-modal-input-book-storage-amount="{{ book.storageAmount }}" data-modal-input-book-url="{{ book.url ?? '' }}">
           <div class="list-col-grow">
             <div>
               {{ book.title }}<span class="text-xs text-base-content/50">
@@ -65,7 +65,13 @@
               {{ book.description }}
             </div>
           </div>
-          <div class="list-col-1 text-right">
+          <div class="list-col-1 text-right flex gap-2 items-center">
+            @if(book.url && book.url.length > 0)
+            <a href="{{ book.url }}" class="btn btn-circle btn-sm btn-soft btn-accent" target="_blank" rel="noopener noreferrer"
+              title="Télécharger le PDF" onclick="event.stopPropagation()">
+              @svg('heroicons:arrow-down-tray', {class: 'size-4'})
+            </a>
+            @end
             @if(book.publishedAt === null)
             <span class="badge badge-soft badge-secondary" title="Ce livret n'a pas encore été annoncé">
               @svg('heroicons:megaphone', {class: 'size-4'})
@@ -94,14 +100,14 @@
           <input type="hidden" name="categoryId" value="{{ category.id }}" />
           <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required />
           <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" />
-          <button class="btn btn-circle btn-sm btn-soft btn-accent" type="submit" title="Ajouter un livret">
+          <button class="btn btn-circle btn-sm btn-soft btn-success" type="submit" title="Ajouter un livret">
             @svg('heroicons:plus', {class: 'size-4'})
           </button>
         </div>
       </form>
     </div>
-    </div>
-    @end
+  </div>
+  @end
 
   <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
     @if(categories.some(category => category.books.some(book => book.publishedAt === null)))

@@ -30,4 +30,7 @@ export default class Book extends BaseModel {
 
   @column()
   declare storageAmount: number
+
+  @column()
+  declare url: string | null
 }

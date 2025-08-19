@@ -6,6 +6,7 @@ export const createBookValidator = vine.compile(
     title: vine.string().minLength(1),
     description: vine.string().optional(),
     storageAmount: vine.number().optional(),
+    url: vine.string().optional(),
   })
 )
 
@@ -15,5 +16,6 @@ export const editBookValidator = vine.compile(
     title: vine.string().minLength(1).optional(),
     description: vine.string().optional(),
     storageAmount: vine.number().optional(),
+    url: vine.string().optional(),
   })
 )
