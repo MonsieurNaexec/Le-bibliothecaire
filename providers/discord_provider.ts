@@ -88,6 +88,7 @@ export const createCategorySelectRow = async (
   const categories = await BookCategory.query()
     .where('guildId', guildId)
     .if(categoriesId, (q) => q.whereIn('id', categoriesId!))
+    .orderBy('name', 'asc')
     .limit(25)
 
   return createStringSelectRow(
@@ -113,6 +114,7 @@ export const createBookSelectRow = async (
     .if(categoryId, (query) => {
       query.andWhere('book_categories.id', categoryId!)
     })
+    .orderBy('books.title', 'asc')
     .limit(25)
 
   return createStringSelectRow(
