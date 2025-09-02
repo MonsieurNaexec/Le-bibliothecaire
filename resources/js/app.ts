@@ -149,7 +149,9 @@ document.addEventListener('DOMContentLoaded', () => {
     'select[data-tags-select]'
   ) as NodeListOf<HTMLSelectElement>
   tagSelects.forEach((select) => {
-    tags.forEach((tag) => {
+    ;[...tags]
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((tag) => {
       const option = document.createElement('option')
       option.value = tag
       option.innerText = tag

@@ -41,7 +41,7 @@ export default class StorageController {
     await BookCategory.create({
       name,
       guildId,
-      tags,
+      tags: tags.sort(),
       queryNotificationMentionRoleId: queryMentionRoleId || null,
     })
     return response.redirect().back()
