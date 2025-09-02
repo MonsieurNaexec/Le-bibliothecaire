@@ -2,12 +2,12 @@ import AnnouncementChannel from '#models/announcement_channel'
 import Book from '#models/book'
 import BookCategory from '#models/book_category'
 import GroupRole from '#models/group_role'
-import { bot } from '#providers/discord_provider'
+import { bot, createCategorySelectRow } from '#providers/discord_provider'
 import {
   createAnnouncementChannelValidator,
   updateAnnouncementChannelValidator,
 } from '#validators/announcements'
-import { updateSettingsValidator } from '#validators/settings'
+import { createFormValidator, updateSettingsValidator } from '#validators/settings'
 import type { HttpContext } from '@adonisjs/core/http'
 import { roleMention } from 'discord.js'
 import { DateTime } from 'luxon'
@@ -314,6 +314,40 @@ export default class GuildController {
       .update({
         publishedAt: DateTime.now().toISO(),
       })
+
+    return response.redirect().back()
+  }
+
+  async createForm({ params, response, request, bouncer, logger }: HttpContext) {
+    const guild = await bot.getGuild(params.guildId)
+    if (!guild) return response.notFound('Guild not found or not joined')
+
+    if (await bouncer.denies('accessGuildAdministration', guild.id)) {
+      return response.forbidden('You do not have permission to create a form in this guild')
+    }
+
+    const body = await createFormValidator.validate(request.all())
+    const categoryIds = typeof body.categoryId === 'number' ? [body.categoryId] : body.categoryId
+    logger.debug({ data: body }, 'New form data validated')
+
+    const channel = guild.discordGuild?.channels.resolve(body.channelId)
+    if (!channel?.isSendable())
+      return response.badRequest('This channel does not exist or is not sendable')
+
+    const row = await createCategorySelectRow(guild.id, 'query_category', false, categoryIds)
+
+    if (!row) {
+      logger.debug('Row returned is null, maybe no category created')
+      return response.badRequest('No category created for this guild')
+    }
+
+    await channel.send({
+      content: '## Sélectionner une catégorie pour demander un livret:',
+      components: [row],
+    })
+    logger.debug(
+      `Created form in channel ${channel.name} (${channel.id}) with ${categoryIds.length} categories`
+    )
 
     return response.redirect().back()
   }

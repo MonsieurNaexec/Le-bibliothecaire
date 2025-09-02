@@ -1,3 +1,4 @@
+import Choices from 'choices.js'
 import { patch } from './requests.js'
 
 let openedCollapsibles = new Set(
@@ -19,6 +20,17 @@ document.addEventListener('DOMContentLoaded', () => {
       })
       if (result !== null) currentValue = target.value
       else target.value = currentValue
+    })
+  })
+
+  /**
+   * Handle multiple select elements
+   */
+  const multiSelects = document.querySelectorAll('select[multiple]')
+  multiSelects.forEach((s) => {
+    const select = new Choices(s, {
+      maxItemCount: 25,
+      maxItemText: (maxItemCount) => `Maximum ${maxItemCount} éléments sélectionnables`,
     })
   })
 
@@ -152,11 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ;[...tags]
       .sort((a, b) => a.localeCompare(b))
       .forEach((tag) => {
-      const option = document.createElement('option')
-      option.value = tag
-      option.innerText = tag
-      if (select) select.appendChild(option)
-    })
+        const option = document.createElement('option')
+        option.value = tag
+        option.innerText = tag
+        if (select) select.appendChild(option)
+      })
     select.addEventListener('change', (event) => {
       const target = event.target as HTMLSelectElement
       const selectedValue = target.value

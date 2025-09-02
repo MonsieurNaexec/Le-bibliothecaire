@@ -67,6 +67,7 @@
     "@adonisjs/vite": "^4.0.0",
     "@iconify-json/heroicons": "^1.2.2",
     "@vinejs/vine": "^3.0.1",
+    "choices.js": "^11.1.0",
     "discord.js": "^14.21.0",
     "edge-iconify": "^2.0.1",
     "edge.js": "^6.2.1",

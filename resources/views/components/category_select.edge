@@ -2,11 +2,13 @@
   <label class="label">
     {{ label }}
   </label>
-  <select class="select" name="{{ name }}" {{ id ? `id="${id}" ` : '' }}title="{{ label }}" {{ typeof patch=="string" ?
-    `data-patch=${patch} ` : patch ? 'data-patch' : '' }}>
+  <select class="select min-w-12" name="{{ name }}" {{ id ? `id="${id}" ` : '' }}title="{{ label }}" {{ typeof
+    patch=="string" ? `data-patch=${patch} ` : patch ? 'data-patch' : '' }}{{ multiple ? " multiple" : '' }}>
+    @if(!multiple)
     <option value="null" {{ currentValue ? '' : 'selected' }}>
       {{ noneLabel ?? 'Aucune' }}
     </option>
+    @endif
     @each(category in categories)
     <option value="{{ category.id }}" class="flex items-center gap-4" {{ category.id===currentValue ? 'selected' : ''
       }}>

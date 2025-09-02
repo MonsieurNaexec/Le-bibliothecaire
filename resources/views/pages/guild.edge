@@ -39,6 +39,23 @@
       'queryNotificationMentionRoleId',
       currentValue: guild.queryNotificationMentionRoleId, roles, patch: true })
     </fieldset>
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-col gap-4 justify-evenly">
+      <legend class="fieldset-legend">
+        Ajouter un formulaire
+      </legend>
+      <div class="flex flex-row gap-2 justify-center items-end">
+        <form action="{{guild.id}}/form" method="post" class="contents">
+          {{ csrfField() }}
+          <input type="hidden" name="guildId" value="{{ guild.id }}" />
+          @!component('components/channel_select', { label: "Salon du formulaire", name: 'channelId', channels })
+          @!component('components/category_select', { label: "Catégories", noneLabel: "Aucune", name: 'categoryId',
+          categories, multiple: true })
+          <button type="submit" class="btn btn-circle btn-primary">
+            @svg('heroicons:plus', { class: 'size-6' })
+          </button>
+        </form>
+      </div>
+    </fieldset>
     <fieldset
       class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-2 flex flex-row flex-wrap gap-4 justify-evenly">
       <legend class="fieldset-legend">
@@ -107,6 +124,6 @@
       </div>
     </fieldset>
   </div>
-  </div>
-  @endslot
+</div>
+@endslot
 @end
