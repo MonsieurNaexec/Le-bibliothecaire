@@ -1,11 +1,27 @@
 <dialog id="mod_book_storage" class="modal modal-bottom sm:modal-middle">
   <form method="post" action="storage/books?_method=PATCH" class="contents">
     <div class="modal-box">
-      <div id="mod_book_storage_BookTitle" class="font-semibold">
-      </div>
-      <div id="mod_book_storage_BookDescription" class="text-sm">
-      </div>
-      <div class="rounded p-2 bg-base-200 mt-2 flex items-center gap-2">
+      <div data-edit-mode-hidden>
+        <div id="mod_book_storage_BookTitle" class="font-semibold">
+        </div>
+        <div id="mod_book_storage_BookDescription" class="text-sm">
+        </div>
+        </div>
+        <div class="form-control" data-edit-mode>
+          <label for="mod_book_storage_BookTitleInput" class="label cursor-pointer text-sm">
+            <span class="label-text">Titre</span>
+          </label>
+          <input type="text" name="title" id="mod_book_storage_BookTitleInput" class="input input-bordered w-full"
+            placeholder="Titre du livret" required maxlength="100" />
+        </div>
+        <div class="form-control" data-edit-mode>
+          <label for="mod_book_storage_BookDescriptionInput" class="label cursor-pointer text-sm">
+            <span class="label-text">Description</span>
+          </label>
+          <input type="text" name="description" id="mod_book_storage_BookDescriptionInput" class="input input-bordered w-full"
+            placeholder="Description du livret" maxlength="100" />
+        </div>
+        <div class="rounded p-2 bg-base-200 mt-4 flex items-center gap-2">
         <div class="grow flex items-center gap-1">
           @svg('heroicons:archive-box', {class: 'size-4'})
           Stock actuel :
@@ -35,7 +51,8 @@
         {{ csrfField() }}
         <button class="btn btn-primary" type="submit"
           data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Enregistrer</button>
-        <button class="btn" formmethod="dialog" data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Annuler</button>
+        <button class="btn" formmethod="dialog"
+          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Annuler</button>
       </div>
     </div>
   </form>

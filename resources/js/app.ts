@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   const multiSelects = document.querySelectorAll('select[multiple]')
   multiSelects.forEach((s) => {
-    const select = new Choices(s, {
+    new Choices(s, {
       maxItemCount: 25,
       maxItemText: (maxItemCount) => `Maximum ${maxItemCount} éléments sélectionnables`,
     })
@@ -80,6 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const input = modal.querySelector(`#${modalId}_${inputId}`) as HTMLElement | null
             if (input instanceof HTMLInputElement && typeof value === 'string') input.value = value
             else if (input && typeof value === 'string') input.innerText = value
+            // Also populate the corresponding Input field if it exists
+            const editInput = modal.querySelector(
+              `#${modalId}_${inputId}Input`
+            ) as HTMLInputElement | null
+            if (editInput instanceof HTMLInputElement && typeof value === 'string')
+              editInput.value = value
           })
           modal.showModal()
         } else {
@@ -102,6 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
     element.addEventListener('change', () => {
       const container = document.querySelector(`[data-toggle-container="${toggleClass}"]`)
       container?.classList.toggle(`**:data-[${toggleClass}]:hidden`, !element.checked)
+      document.querySelectorAll(`[data-${toggleClass}-hidden]`).forEach((el) => {
+        el.classList.toggle(`hidden`, element.checked)
+      })
       localStorage.setItem('toggle-' + toggleClass, element.checked.toString())
     })
     const storedValue = localStorage.getItem('toggle-' + toggleClass)
@@ -110,6 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
       document
         .querySelector(`[data-toggle-container="${toggleClass}"]`)
         ?.classList.remove(`**:data-[${toggleClass}]:hidden`)
+      document.querySelectorAll(`[data-${toggleClass}-hidden]`).forEach((el) => {
+        el.classList.add('hidden')
+      })
     }
   })
 
