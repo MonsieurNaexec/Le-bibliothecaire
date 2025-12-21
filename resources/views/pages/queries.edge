@@ -24,7 +24,7 @@
             </div>
           </div>
           <div class="list-col-1 text-right">
-            <span class="badge badge-soft badge-outline badge-info" title="Ce livret n'a pas encore été annoncé">
+            <span class="badge badge-soft badge-outline badge-info" title="Nombre de demandes en attente">
               @svg('heroicons:chat-bubble-bottom-center-text', {class: 'size-4'})
               {{ book.queries.length }}
             </span>
@@ -58,7 +58,8 @@
           <ul class="list w-full max-w-xl">
             <div class="flex flex-row flex-wrap items-center gap-2 px-2">
               @if(user.avatar)
-              <div class="rounded-full overflow-hidden"><img src="{{ user.avatar }}" alt="{{ user.name }}" class="size-6">
+              <div class="rounded-full overflow-hidden"><img src="{{ user.avatar }}" alt="{{ user.name }}"
+                  class="size-6">
               </div>
               @else
               <div class="bg-[#5865F2] rounded-full size-6 p-1">
@@ -97,16 +98,16 @@
               </div>
             </li>
             @end
-            </ul>
+          </ul>
         </li>
         @else
         <p class="text-sm text-gray-500">
           Aucune demande en cours.
         </p>
         @end
-        </ul>
-        </div>
-        </div>
+      </ul>
+    </div>
+  </div>
 </div>
 @endslot
 @end
