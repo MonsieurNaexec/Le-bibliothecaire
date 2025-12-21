@@ -6,12 +6,12 @@
       </h3>
       <div class="flex flex-col gap-4 text-sm">
         <input type="text" name="categoryName" placeholder="Nom de la catégorie" class="input input-bordered w-full" required
-          autofocus />
+          autofocus maxlength="100" />
         {{ csrfField() }}
         @!component('components/tags_select')
         @!component('components/role_select', { label: "Mention", name: 'queryMentionRoleId', id:
         "mod_category_add_QueryMentionRoleId", roles })
-        </div>
+      </div>
       <div class="modal-action">
         <button class="btn btn-primary" type="submit">Ajouter</button>
         <button class="btn" formmethod="dialog" formnovalidate>Annuler</button>
