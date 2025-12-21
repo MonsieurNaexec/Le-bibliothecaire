@@ -6,39 +6,22 @@
         </div>
         <div id="mod_book_storage_BookDescription" class="text-sm">
         </div>
-        </div>
-        <div class="form-control" data-edit-mode>
-          <label for="mod_book_storage_BookTitleInput" class="label cursor-pointer text-sm">
-            <span class="label-text">Titre</span>
-          </label>
-          <input type="text" name="title" id="mod_book_storage_BookTitleInput" class="input input-bordered w-full"
-            placeholder="Titre du livret" required maxlength="100" />
-        </div>
-        <div class="form-control" data-edit-mode>
-          <label for="mod_book_storage_BookDescriptionInput" class="label cursor-pointer text-sm">
-            <span class="label-text">Description</span>
-          </label>
-          <input type="text" name="description" id="mod_book_storage_BookDescriptionInput" class="input input-bordered w-full"
-            placeholder="Description du livret" maxlength="100" />
-        </div>
-        <div class="rounded p-2 bg-base-200 mt-4 flex items-center gap-2">
-        <div class="grow flex items-center gap-1">
-          @svg('heroicons:archive-box', {class: 'size-4'})
-          Stock actuel :
-          <input type="number" readonly name="storageAmount" id="mod_book_storage_BookStorageAmount"
-            class="w-10 focus-visible:outline-0 font-semibold" data-auto-resize />
-          (<span id="mod_book_storage_AmountDiff">+0</span>)
-          </span>
-        </div>
-        <button class="btn btn-circle btn-soft btn-sm" type="button" title="Diminuer le stock"
-          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,-1">
-          @svg('heroicons:minus', {class: 'size-4'})
-        </button>
-        <button class="btn btn-circle btn-soft btn-sm" type="button" title="Augmenter le stock"
-          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,+1">
-          @svg('heroicons:plus', {class: 'size-4'})
-        </button>
       </div>
+      <div class="form-control" data-edit-mode>
+        <label for="mod_book_storage_BookTitleInput" class="label cursor-pointer text-sm">
+          <span class="label-text">Titre</span>
+        </label>
+        <input type="text" name="title" id="mod_book_storage_BookTitleInput" class="input input-bordered w-full"
+          placeholder="Titre du livret" required maxlength="100" />
+      </div>
+      <div class="form-control" data-edit-mode>
+        <label for="mod_book_storage_BookDescriptionInput" class="label cursor-pointer text-sm">
+          <span class="label-text">Description</span>
+        </label>
+        <input type="text" name="description" id="mod_book_storage_BookDescriptionInput" class="input input-bordered w-full"
+          placeholder="Description du livret" maxlength="100" />
+        </div>
+      <storage-amount id="mod_book_storage_StorageAmount" amount="0" readonly="false"></storage-amount>
       <div class="form-control mt-2" data-edit-mode>
         <label for="mod_book_storage_BookUrl" class="label cursor-pointer text-sm">
           <span class="label-text">URL du livret</span>
@@ -49,10 +32,9 @@
       <input type="hidden" name="bookId" id="mod_book_storage_BookId" />
       <div class="modal-action">
         {{ csrfField() }}
-        <button class="btn btn-primary" type="submit"
-          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Enregistrer</button>
+        <button class="btn btn-primary" type="submit">Enregistrer</button>
         <button class="btn" formmethod="dialog"
-          data-increment="mod_book_storage_BookStorageAmount,mod_book_storage_AmountDiff,0,ignore">Annuler</button>
+          onclick="document.getElementById('mod_book_storage_StorageAmount')?.reset()">Annuler</button>
       </div>
     </div>
   </form>

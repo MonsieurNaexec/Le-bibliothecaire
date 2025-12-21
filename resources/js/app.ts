@@ -1,5 +1,9 @@
 import Choices from 'choices.js'
+import { StorageAmountComponent } from './components/storage_amount.js'
 import { patch } from './requests.js'
+
+// Register custom elements
+customElements.define('storage-amount', StorageAmountComponent)
 
 let openedCollapsibles = new Set(
   JSON.parse(localStorage.getItem('openedCollapsibles') ?? '[]') as string[]
@@ -78,8 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
           modalInputs.forEach(([inputId, value]) => {
             if (!inputId || !value) return
             const input = modal.querySelector(`#${modalId}_${inputId}`) as HTMLElement | null
-            if (input instanceof HTMLInputElement && typeof value === 'string') input.value = value
-            else if (input && typeof value === 'string') input.innerText = value
+
+            // Handle storage-amount custom component
+            if (input instanceof StorageAmountComponent && inputId === 'BookStorageAmount') {
+              input.setAttribute('amount', value as string)
+            } else if (input instanceof HTMLInputElement && typeof value === 'string') {
+              input.value = value
+            } else if (input && typeof value === 'string') {
+              input.innerText = value
+            }
+
             // Also populate the corresponding Input field if it exists
             const editInput = modal.querySelector(
               `#${modalId}_${inputId}Input`
@@ -87,6 +99,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (editInput instanceof HTMLInputElement && typeof value === 'string')
               editInput.value = value
           })
+
+          // Handle StorageAmount component specifically
+          const storageComponent = modal.querySelector(
+            '#mod_book_storage_StorageAmount'
+          ) as StorageAmountComponent | null
+          if (storageComponent && storageComponent instanceof StorageAmountComponent) {
+            const storageAmount = (trigger as HTMLElement).dataset.modalInputBookStorageAmount
+            if (storageAmount) {
+              storageComponent.setAttribute('amount', storageAmount)
+            }
+          }
+
           modal.showModal()
         } else {
           console.warn(`Modal with ID ${modalId} not found`)
@@ -123,36 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
         el.classList.add('hidden')
       })
     }
-  })
-
-  /**
-   * Handle increment/decrement buttons
-   */
-  const incrementButtons = document.querySelectorAll('[data-increment]') as NodeListOf<HTMLElement>
-  incrementButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      if (!button.dataset.increment) return
-      const [absoluteTargetId, relativeTargetId, amount, ignore] =
-        button.dataset.increment.split(',')
-      const relativeTarget = document.getElementById(relativeTargetId) as HTMLElement | null
-      const absoluteTarget = document.getElementById(absoluteTargetId) as HTMLInputElement | null
-      if (!relativeTarget || !absoluteTarget) return
-      const currentRelativeValue = parseInt(relativeTarget.innerText) || 0
-      const currentAbsoluteValue = parseInt(absoluteTarget.value) || 0
-      const amountValue = parseInt(amount)
-
-      const newAbsoluteValue =
-        amount.startsWith('+') || amount.startsWith('-')
-          ? Math.max(currentAbsoluteValue + amountValue, 0)
-          : amountValue || 0
-      if (ignore !== 'ignore') absoluteTarget.value = newAbsoluteValue.toString()
-
-      const newRelativeValue =
-        amount.startsWith('+') || amount.startsWith('-')
-          ? currentRelativeValue + (newAbsoluteValue - currentAbsoluteValue)
-          : amountValue || 0
-      relativeTarget.innerText = `${newRelativeValue < 0 ? '' : '+'}${newRelativeValue}`
-    })
   })
 
   /**
