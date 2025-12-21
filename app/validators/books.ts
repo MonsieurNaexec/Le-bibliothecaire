@@ -14,8 +14,8 @@ export const editBookValidator = vine.compile(
   vine.object({
     bookId: vine.number(),
     title: vine.string().minLength(1).optional(),
-    description: vine.string().optional(),
+    description: vine.string().optional().nullable(),
     storageAmount: vine.number().optional(),
-    url: vine.string().optional(),
+    url: vine.string().optional().nullable(),
   })
 )

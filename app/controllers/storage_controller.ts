@@ -134,8 +134,8 @@ export default class StorageController {
       return response.notFound('Book not found or does not belong to this guild')
     }
 
-    if (title) book.title = title
-    if (description) book.description = description
+    if (title !== undefined) book.title = title
+    if (description !== undefined) book.description = description ?? ''
     if (storageAmount !== undefined) book.storageAmount = storageAmount
     if (url !== undefined) book.url = url
     await book.save()
