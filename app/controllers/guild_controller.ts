@@ -342,7 +342,9 @@ export default class GuildController {
     }
 
     await channel.send({
-      content: '## Sélectionner une catégorie pour demander un livret:',
+      content:
+        '## Sélectionner une catégorie pour demander un livret:\n' +
+        (body.comment ? `*${body.comment}*` : ''),
       components: [row],
     })
     logger.debug(

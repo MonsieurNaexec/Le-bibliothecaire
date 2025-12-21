@@ -17,5 +17,6 @@ export const createFormValidator = vine.compile(
       vine.array(vine.number()).minLength(1).maxLength(25),
       vine.number(),
     ]),
+    comment: vine.string().optional(),
   })
 )

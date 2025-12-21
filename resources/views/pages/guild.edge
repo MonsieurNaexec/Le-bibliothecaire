@@ -43,14 +43,20 @@
       <legend class="fieldset-legend">
         Ajouter un formulaire
       </legend>
-      <div class="flex flex-row gap-2 justify-center items-end">
+      <div class="grid grid-cols-2 gap-2 px-4 items-center justify-center">
         <form action="{{guild.id}}/form" method="post" class="contents">
           {{ csrfField() }}
           <input type="hidden" name="guildId" value="{{ guild.id }}" />
           @!component('components/channel_select', { label: "Salon du formulaire", name: 'channelId', channels })
           @!component('components/category_select', { label: "Catégories", noneLabel: "Aucune", name: 'categoryId',
           categories, multiple: true })
-          <button type="submit" class="btn btn-circle btn-primary">
+          <div class="flex flex-col">
+            <label class="label">
+              Commentaire
+            </label>
+            <input type="text" class="input" name="comment" title="Commentaire" />
+          </div>
+          <button type="submit" class="btn btn-circle btn-primary justify-self-end">
             @svg('heroicons:plus', { class: 'size-6' })
           </button>
         </form>
