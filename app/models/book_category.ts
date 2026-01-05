@@ -1,7 +1,7 @@
 import Book from '#models/book'
 import GuildConfig from '#models/guild_config'
 import logger from '@adonisjs/core/services/logger'
-import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, belongsTo, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import type { DateTime } from 'luxon'
 
@@ -46,4 +46,9 @@ export default class BookCategory extends BaseModel {
 
   @column()
   declare queryNotificationMentionRoleId: string | null
+
+  @computed()
+  get unpublishedBooks() {
+    return this.books?.filter((book) => book.publishedAt === null)
+  }
 }

@@ -1,0 +1,31 @@
+@layout.main()
+@slot('main')
+<main class="flex justify-center items-center h-full mt-10">
+  <form action="/guild/{{ guild.id }}/publish" method="post" class="max-w-3xl w-full">
+    {{ csrfField() }}
+    @each(category in categories.filter(category => category.unpublishedBooks?.length))
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-4">
+      <legend class="fieldset-legend">{{ category.name }}</legend>
+      @each(book in category.books)
+      @if(!book.publishedAt)
+      <div class="book-checkbox">
+        <label class="label">
+          <input class="checkbox" type="checkbox" name="bookIds[]" value="{{ book.id }}">
+          <span class="text-base font-medium">{{ book.title }}</span>
+          <span>{{ book.description }}</span>
+        </label>
+      </div>
+      @endif
+      @endeach
+    </fieldset>
+    @endeach
+    <div class="flex justify-end mt-4">
+      <button class="btn btn-secondary" type="submit">
+        @svg('heroicons:megaphone',{class: 'size-6'})
+        Annoncer la sélection
+      </button>
+    </div>
+  </form>
+</main>
+@endslot
+@end

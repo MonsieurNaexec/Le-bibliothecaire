@@ -199,9 +199,26 @@ export default class GuildController {
     return response.redirect().back()
   }
 
-  async publish({ params, response, bouncer, logger }: HttpContext) {
+  async publishForm({ params, response, bouncer, view }: HttpContext) {
+    const guildId = params.guildId
+    const guild = await bot.getGuild(guildId)
+    if (!guild) return response.notFound('Guild not found or not joined')
+
+    if (await bouncer.denies('accessGuildBackend', guildId)) {
+      return response.forbidden('You do not have permission to access this guild storage')
+    }
+    const categories = await BookCategory.query()
+      .where('guildId', guildId)
+      .orderBy('name', 'asc')
+      .preload('books', (q) => q.orderBy('title', 'asc'))
+
+    return view.render('pages/publish', { categories })
+  }
+
+  async publish({ params, request, response, bouncer, logger }: HttpContext) {
     const guild = await bot.getGuild(params.guildId)
     if (!guild) return response.notFound('Guild not found or not joined')
+    const bookIds = request.input('bookIds', []) as number[]
 
     if (await bouncer.denies('accessGuildBackend', guild.id)) {
       return response.forbidden('You do not have permission to publish in this guild')
@@ -219,6 +236,7 @@ export default class GuildController {
           )
       })
       .where('book_categories.guild_id', guild.id)
+      .andWhereIn('books.id', bookIds)
       .andWhereNull('publishedAt')
       .select(
         'books.*',
@@ -315,7 +333,7 @@ export default class GuildController {
         publishedAt: DateTime.now().toISO(),
       })
 
-    return response.redirect().back()
+    return response.redirect().toRoute('guild.storage', { guildId: guild.id })
   }
 
   async createForm({ params, response, request, bouncer, logger }: HttpContext) {

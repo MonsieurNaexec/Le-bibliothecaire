@@ -46,6 +46,7 @@ router
           GuildController,
           'deleteGroupRole',
         ])
+        router.get('/guild/:guildId/publish', [GuildController, 'publishForm']).as('guild.publish')
         router.post('/guild/:guildId/publish', [GuildController, 'publish'])
         router.post('/guild/:guildId/form', [GuildController, 'createForm'])
 

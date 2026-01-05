@@ -111,14 +111,11 @@
 
   <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
     @if(categories.some(category => category.books.some(book => book.publishedAt === null)))
-    <form action="/guild/{{ guild.id }}/publish" method="post">
-      {{ csrfField() }}
-      <button class="btn btn-secondary btn-xl md:btn-md max-md:btn-circle" type="submit"
+      <a class="btn btn-secondary btn-xl md:btn-md max-md:btn-circle" href="/guild/{{ guild.id }}/publish"
         title="Annoncer les nouveaux livrets">
         @svg('heroicons:megaphone',{class: 'size-8 md:size-6'})
         <span class="hidden md:inline">Annoncer les livrets</span>
-      </button>
-    </form>
+      </a>
     @end
     <button class="btn btn-primary btn-xl md:btn-md max-md:btn-circle" onclick="mod_category_add.showModal()"
       type="button" title="Ajouter une catégorie" data-edit-mode>
