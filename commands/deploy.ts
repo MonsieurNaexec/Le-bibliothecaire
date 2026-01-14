@@ -59,7 +59,9 @@ export default class Deploy extends BaseCommand {
     this.newVersion =
       releaseType === 'keep'
         ? currentVersion
-        : inc(currentVersion, this.releaseType, this.prereleaseIdentifier)
+        : this.prereleaseIdentifier
+          ? inc(currentVersion, this.releaseType, this.prereleaseIdentifier)
+          : inc(currentVersion, this.releaseType)
     if (!this.newVersion) {
       throw new Error('New calculated version is invalid')
     }
