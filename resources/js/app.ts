@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById(modalId) as HTMLDialogElement | null
         if (modal) {
           modalInputs.forEach(([inputId, value]) => {
-            if (!inputId || !value) return
+            if (!inputId || value == undefined || value === null) return
             const input = modal.querySelector(`#${modalId}_${inputId}`) as HTMLElement | null
 
             // Handle storage-amount custom component
