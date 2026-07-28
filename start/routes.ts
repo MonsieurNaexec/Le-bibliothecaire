@@ -47,7 +47,9 @@ router
           'deleteGroupRole',
         ])
         router.get('/guild/:guildId/publish', [GuildController, 'publishForm']).as('guild.publish')
-        router.post('/guild/:guildId/publish', [GuildController, 'publish'])
+        router
+          .post('/guild/:guildId/publish', [GuildController, 'publish'])
+          .as('guild.publish.submit')
         router.post('/guild/:guildId/form', [GuildController, 'createForm'])
 
         router.get('/guild/:guildId/storage', [StorageController, 'handle']).as('guild.storage')
