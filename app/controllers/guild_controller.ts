@@ -310,11 +310,12 @@ export default class GuildController {
           content: message,
         })
       } catch (error) {
-        logger.error(
-          { error },
-          `Failed to send message to channel "${channel.name}": ${error.message}`
-        )
-        errors.push(`Failed to send message to channel "${channel.name}": ${error.message}`)
+        const msg =
+          typeof error === 'object' && error !== null && 'message' in error
+            ? error.message
+            : 'Unknown error'
+        logger.error({ error }, `Failed to send message to channel "${channel.name}": ${msg}`)
+        errors.push(`Failed to send message to channel "${channel.name}": ${msg}`)
       }
     }
 

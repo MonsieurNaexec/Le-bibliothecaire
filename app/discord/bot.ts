@@ -117,7 +117,11 @@ export class Bot {
     try {
       await command.execute(interaction)
     } catch (error) {
-      logger.error({ error }, `Error executing command ${commandName}: ${error.message}`)
+      const msg =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? error.message
+          : 'Unknown error'
+      logger.error({ error }, `Error executing command ${commandName}: ${msg}`)
     }
   }
 
@@ -155,7 +159,11 @@ export class Bot {
     try {
       await button.execute(interaction, args)
     } catch (error) {
-      logger.error({ error }, `Error executing button ${buttonName}: ${error.message}`)
+      const msg =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? error.message
+          : 'Unknown error'
+      logger.error({ error }, `Error executing button ${buttonName}: ${msg}`)
     }
   }
 
@@ -193,7 +201,11 @@ export class Bot {
     try {
       await select.execute(interaction, args)
     } catch (error) {
-      logger.error({ error }, `Error executing select ${selectName}: ${error.message}`)
+      const msg =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? error.message
+          : 'Unknown error'
+      logger.error({ error }, `Error executing select ${selectName}: ${msg}`)
     }
   }
 }

@@ -28,7 +28,11 @@ export default class DiscordCommands extends BaseCommand {
         `Successfully reloaded application (/) commands:\n${JSON.stringify(data, null, 2)}`
       )
     } catch (error) {
-      this.logger.error('Error reloading Discord commands:', error)
+      const msg =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? error.message
+          : 'Unknown error'
+      this.logger.error(`Error reloading Discord commands: ${msg}`)
     }
   }
 }
