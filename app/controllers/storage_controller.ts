@@ -96,6 +96,27 @@ export default class StorageController {
     return response.redirect().back()
   }
 
+  async resetCategory({ request, response, bouncer }: HttpContext) {
+    const guildId = request.param('guildId')
+    const categoryId = request.input('categoryId')
+
+    if (await bouncer.denies('accessGuildBackend', guildId)) {
+      return response.forbidden('You do not have permission to access this guild storage')
+    }
+
+    if (!categoryId) {
+      return response.badRequest('Category ID is required')
+    }
+
+    const category = await BookCategory.find(categoryId)
+    if (!category || category.guildId !== guildId) {
+      return response.notFound('Category not found or does not belong to this guild')
+    }
+
+    await Book.query().where('categoryId', categoryId).delete()
+    return response.redirect().back()
+  }
+
   async addBook({ request, response, bouncer }: HttpContext) {
     const guildId = request.param('guildId')
     const { categoryId, title, description, url } = await createBookValidator.validate(

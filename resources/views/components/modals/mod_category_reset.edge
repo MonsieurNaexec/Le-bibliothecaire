@@ -1,0 +1,20 @@
+<dialog id="mod_category_reset" class="modal modal-bottom sm:modal-middle">
+  <form
+    action="{{ route('storage.reset_category', { guildId: guild.id }) }}"
+    method="post"
+    class="modal-box"
+  >
+    <h3 class="text-lg font-bold">Vider une catégorie</h3>
+    <p class="py-4">
+      <span>
+        Voulez-vous vraiment vider cette catégorie ? Tous les livrets de cette catégorie seront supprimés.
+      </span>
+      <input type="hidden" name="categoryId" id="field_reset_category_id" />
+      {{ csrfField() }}
+    </p>
+    <div class="modal-action">
+      <button class="btn btn-error" type="submit">Oui</button>
+      <button class="btn" formmethod="dialog" formnovalidate>Non</button>
+    </div>
+  </form>
+</dialog>

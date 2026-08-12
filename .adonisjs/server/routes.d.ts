@@ -23,6 +23,7 @@ export type ScannedRoutes = {
     'storage.add_category': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.edit_category': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.delete_category': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
+    'storage.reset_category': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.add_book': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.edit_book': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.delete_book': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
@@ -63,6 +64,7 @@ export type ScannedRoutes = {
     'guild.publish.submit': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'guild.create_form': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.add_category': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
+    'storage.reset_category': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
     'storage.add_book': { paramsTuple: [ParamValue]; params: {'guildId': ParamValue} }
   }
   DELETE: {

@@ -56,6 +56,7 @@ router
         router.post('/guild/:guildId/storage', [StorageController, 'addCategory'])
         router.patch('/guild/:guildId/storage', [StorageController, 'editCategory'])
         router.delete('/guild/:guildId/storage', [StorageController, 'deleteCategory'])
+        router.post('/guild/:guildId/storage/reset', [StorageController, 'resetCategory'])
 
         router.post('/guild/:guildId/storage/books', [StorageController, 'addBook'])
         router.patch('/guild/:guildId/storage/books', [StorageController, 'editBook'])

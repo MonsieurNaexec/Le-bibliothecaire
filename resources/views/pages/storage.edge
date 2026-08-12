@@ -1,133 +1,222 @@
 @layout.main()
-@slot('main')
-<div class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
-  data-toggle-container="edit-mode">
-  @!component('components/guild_header', { guild: guild })
-  <div class="self-start flex items-center gap-4">
-    <label class="label">
-      <input type="checkbox" class="toggle" data-toggle-class="edit-mode" />
-      Mode édition
-    </label>
-    <select class="select" data-tags-select>
-      <option value="null" selected>Toutes les catégories</option>
-    </select>
-  </div>
-  @each(category in categories)
-  <div class="collapse collapse-arrow bg-base-200 border border-base-300"
-    id="collapse-storage-category-{{ category.id }}" data-tags="{{ JSON.stringify(category.tags) }}">
-    <input type="checkbox" name="accordion-categories" />
-    <div class="collapse-title font-semibold">
-      <div class="flex justify-between items-center">
-        <div class="flex items-center gap-2">
-          {{ category.name }}
-          @each(tag in category.tags)
-          <span class="badge badge-accent badge-soft badge-outline">{{ tag }}</span>
-          @end
-        </div>
-        @let([min,max] = category.books.reduce((acc, book) => [Math.min(acc[0], book.storageAmount), Math.max(acc[1],
-        book.storageAmount)], [Infinity, -Infinity]))
-        <div class="flex flex-row-reverse justify-start items-center flex-wrap gap-2">
-          <span class="badge badge-soft">
-            @svg('heroicons:book-open', {class: 'size-4'})
-            {{ category.books.length }}
-          </span>
-          @!component('components/storage_badge', { amount: [min,max] })
-          @if(category.books.some(book => book.publishedAt === null))
-          <span class="badge badge-soft badge-secondary" title="Des livrets n'ont pas encore été annoncés">
-            @svg('heroicons:megaphone', {class: 'size-4'})
-          </span>
-          @end
-        </div>
+  @slot('main')
+    <div
+      class="flex flex-col items-center gap-4 p-4 max-w-4xl w-full self-center grow **:data-[edit-mode]:hidden"
+      data-toggle-container="edit-mode"
+    >
+      @!component('components/guild_header', { guild: guild })
+      <div class="self-start flex items-center gap-4">
+        <label class="label">
+          <input type="checkbox" class="toggle" data-toggle-class="edit-mode" />
+          <span>Mode édition</span>
+        </label>
+        <select class="select" data-tags-select>
+          <option value="null" selected>Toutes les catégories</option>
+        </select>
       </div>
-    </div>
-    <div class="collapse-content flex flex-col gap-4">
-      <div class="flex flex-row justify-end gap-2 w-full px-4" data-edit-mode>
-        <button class="btn btn-circle btn-sm btn-soft btn-primary" type="button" title="Modifier la catégorie"
-          onclick="field_edit_category_name.value= '{{ category.name }}'; field_edit_category_id.value = '{{ category.id }}'; field_edit_category_tags.value = {{ JSON.stringify(JSON.stringify(category.tags)) }}; field_edit_category_tags.dispatchEvent(new Event('change')); mod_category_edit_QueryMentionRoleId.value = '{{ category.queryNotificationMentionRoleId }}'; mod_category_edit.showModal();">
-          @svg('heroicons:pencil-square', {class: 'size-4'})
-        </button>
-        <button class="btn btn-circle btn-sm btn-soft btn-error" type="button" title="Supprimer la catégorie"
-          onclick="field_delete_category_id.value = '{{ category.id }}'; mod_category_delete.showModal();">
-          @svg('heroicons:trash', {class: 'size-4'})
-        </button>
-      </div>
-      <ul class="list">
-        @each(book in category.books)
-        <li class="list-row hover:bg-base-100/80" data-modal="mod_book_storage" data-modal-input-book-id="{{ book.id }}"
-          data-modal-input-book-title="{{ book.title }}" data-modal-input-book-description="{{ book.description }}"
-          data-modal-input-book-storage-amount="{{ book.storageAmount }}" data-modal-input-book-url="{{ book.url ?? '' }}">
-          <div class="list-col-grow">
-            <div>
-              {{ book.title }}<span class="text-xs text-base-content/50">
-                &bull; {{ book.createdAt.toLocaleString({ day: '2-digit', month: 'short', year: 'numeric' }) }}</span>
-            </div>
-            <div class="text-xs font-semibold opacity-70">
-              {{ book.description }}
+      @each(category in categories)
+        <div
+          class="collapse collapse-arrow bg-base-200 border border-base-300"
+          id="collapse-storage-category-{{ category.id }}"
+          data-tags="{{ JSON.stringify(category.tags) }}"
+        >
+          <input type="checkbox" name="accordion-categories" />
+          <div class="collapse-title font-semibold">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                {{ category.name }}
+                @each(tag in category.tags)
+                  <span class="badge badge-accent badge-soft badge-outline">{{ tag }}</span>
+                @end
+              </div>
+              @let([min, max] = category.books.reduce(
+                (acc, book) => [
+                  Math.min(acc[0], book.storageAmount),
+                  Math.max(acc[1], book.storageAmount),
+                ],
+                [Infinity, -Infinity],
+              ))
+              <div class="flex flex-row-reverse justify-start items-center flex-wrap gap-2">
+                <span class="badge badge-soft">
+                  @svg('heroicons:book-open', { class: 'size-4' })
+                  {{ category.books.length }}
+                </span>
+                @!component('components/storage_badge', { amount: [min, max] })
+                @if(category.books.some((book) => book.publishedAt === null))
+                  <span
+                    class="badge badge-soft badge-secondary"
+                    title="Des livrets n'ont pas encore été annoncés"
+                  >
+                    @svg('heroicons:megaphone', { class: 'size-4' })
+                  </span>
+                @end
+              </div>
             </div>
           </div>
-          <div class="list-col-1 text-right flex gap-2 items-center">
-            @if(book.url && book.url.length > 0)
-            <a href="{{ book.url }}" class="btn btn-circle btn-sm btn-soft btn-accent" target="_blank" rel="noopener noreferrer"
-              title="Télécharger le PDF" onclick="event.stopPropagation()">
-              @svg('heroicons:arrow-down-tray', {class: 'size-4'})
-            </a>
-            @end
-            @if(book.publishedAt === null)
-            <span class="badge badge-soft badge-secondary" title="Ce livret n'a pas encore été annoncé">
-              @svg('heroicons:megaphone', {class: 'size-4'})
-            </span>
-            @end
-            @!component('components/storage_badge', { amount: book.storageAmount })
+          <div class="collapse-content flex flex-col gap-4">
+            <div class="flex flex-row justify-end gap-2 w-full px-4" data-edit-mode>
+              <button
+                class="btn btn-circle btn-sm btn-soft btn-primary"
+                type="button"
+                title="Modifier la catégorie"
+                onclick="field_edit_category_name.value= '{{ category.name }}'; field_edit_category_id.value = '{{ category.id }}'; field_edit_category_tags.value = {{ JSON.stringify(JSON.stringify(category.tags)) }}; field_edit_category_tags.dispatchEvent(new Event('change')); mod_category_edit_QueryMentionRoleId.value = '{{ category.queryNotificationMentionRoleId }}'; mod_category_edit.showModal();"
+              >
+                @svg('heroicons:pencil-square', { class: 'size-4' })
+              </button>
+              <button
+                class="btn btn-circle btn-sm btn-soft btn-warning"
+                type="button"
+                title="Vider la catégorie"
+                onclick="field_reset_category_id.value = '{{ category.id }}'; mod_category_reset.showModal();"
+              >
+                @svg('heroicons:arrow-path', { class: 'size-4' })
+              </button>
+              <button
+                class="btn btn-circle btn-sm btn-soft btn-error"
+                type="button"
+                title="Supprimer la catégorie"
+                onclick="field_delete_category_id.value = '{{ category.id }}'; mod_category_delete.showModal();"
+              >
+                @svg('heroicons:trash', { class: 'size-4' })
+              </button>
+            </div>
+            <ul class="list">
+              @each(book in category.books)
+                <li
+                  class="list-row hover:bg-base-100/80"
+                  data-modal="mod_book_storage"
+                  data-modal-input-book-id="{{ book.id }}"
+                  data-modal-input-book-title="{{ book.title }}"
+                  data-modal-input-book-description="{{ book.description }}"
+                  data-modal-input-book-storage-amount="{{ book.storageAmount }}"
+                  data-modal-input-book-url="{{ book.url ?? '' }}"
+                >
+                  <div class="list-col-grow">
+                    <div>
+                      {{ book.title }}<span class="text-xs text-base-content/50">
+                        &bull;
+                        {{
+                          book.createdAt.toLocaleString({
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })
+                        }}
+                      </span>
+                    </div>
+                    <div class="text-xs font-semibold opacity-70">{{ book.description }}</div>
+                  </div>
+                  <div class="list-col-1 text-right flex gap-2 items-center">
+                    @if(book.url && book.url.length > 0)
+                      <a
+                        href="{{ book.url }}"
+                        class="btn btn-circle btn-sm btn-soft btn-accent"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Télécharger le PDF"
+                        onclick="event.stopPropagation()"
+                      >
+                        @svg('heroicons:arrow-down-tray', { class: 'size-4' })
+                      </a>
+                    @end
+                    @if(book.publishedAt === null)
+                      <span
+                        class="badge badge-soft badge-secondary"
+                        title="Ce livret n'a pas encore été annoncé"
+                      >
+                        @svg('heroicons:megaphone', { class: 'size-4' })
+                      </span>
+                    @end
+                    @!component('components/storage_badge', {
+                      amount: book.storageAmount,
+                    })
+                  </div>
+                  <button
+                    class="btn btn-circle btn-sm btn-soft btn-error"
+                    type="button"
+                    title="Supprimer le livret"
+                    data-edit-mode
+                    data-modal="mod_book_delete"
+                    data-modal-input-book-id="{{ book.id }}"
+                    data-modal-input-book-title="{{ book.title }}"
+                    data-modal-input-book-description="{{ book.description }}"
+                  >
+                    @svg('heroicons:trash', { class: 'size-4' })
+                  </button>
+                </li>
+              @else
+                <p class="text-sm text-gray-500">Aucune livret dans cette catégorie.</p>
+              @end
+            </ul>
+            <form
+              action="storage/books"
+              method="post"
+              class="border-t border-t-base-300 pt-1"
+              data-edit-mode
+            >
+              <p class="text-xs text-base-content/60">Ajouter un livret</p>
+              {{ csrfField() }}
+              <div class="flex flex-row items-center justify-stretch gap-2 ">
+                <input type="hidden" name="categoryId" value="{{ category.id }}" />
+                <input
+                  type="text"
+                  placeholder="Titre"
+                  class="input input-ghost w-1/2"
+                  name="title"
+                  required
+                  maxlength="100"
+                />
+                <input
+                  type="text"
+                  placeholder="Description"
+                  class="input input-ghost w-full"
+                  name="description"
+                  maxlength="100"
+                />
+                <button
+                  class="btn btn-circle btn-sm btn-soft btn-success"
+                  type="submit"
+                  title="Ajouter un livret"
+                >
+                  @svg('heroicons:plus', { class: 'size-4' })
+                </button>
+              </div>
+            </form>
           </div>
-          <button class="btn btn-circle btn-sm btn-soft btn-error" type="button" title="Supprimer le livret" data-edit-mode
-            data-modal="mod_book_delete" data-modal-input-book-id="{{ book.id }}" data-modal-input-book-title="{{ book.title }}"
-            data-modal-input-book-description="{{ book.description }}">
-            @svg('heroicons:trash', {class: 'size-4'})
-          </button>
-        </li>
-        @else
-        <p class="text-sm text-gray-500">
-          Aucune livret dans cette catégorie.
-        </p>
-        @end
-      </ul>
-      <form action="storage/books" method="post" class="border-t border-t-base-300 pt-1" data-edit-mode>
-        <p class="text-xs text-base-content/60">
-          Ajouter un livret
-        </p>
-        {{ csrfField() }}
-        <div class="flex flex-row items-center justify-stretch gap-2 ">
-          <input type="hidden" name="categoryId" value="{{ category.id }}" />
-          <input type="text" placeholder="Titre" class="input input-ghost w-1/2" name="title" required maxlength="100" />
-          <input type="text" placeholder="Description" class="input input-ghost w-full" name="description" maxlength="100" />
-          <button class="btn btn-circle btn-sm btn-soft btn-success" type="submit" title="Ajouter un livret">
-            @svg('heroicons:plus', {class: 'size-4'})
-          </button>
         </div>
-      </form>
-    </div>
-  </div>
-  @end
+      @end
 
-  <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
-    @if(categories.some(category => category.books.some(book => book.publishedAt === null)))
-      <a class="btn btn-secondary btn-xl md:btn-md max-md:btn-circle" href="/guild/{{ guild.id }}/publish"
-        title="Annoncer les nouveaux livrets">
-        @svg('heroicons:megaphone',{class: 'size-8 md:size-6'})
-        <span class="hidden md:inline">Annoncer les livrets</span>
-      </a>
-    @end
-    <button class="btn btn-primary btn-xl md:btn-md max-md:btn-circle" onclick="mod_category_add.showModal()"
-      type="button" title="Ajouter une catégorie" data-edit-mode>
-      @svg('heroicons:plus',{class: 'size-10 md:size-6'})
-      <span class="hidden md:inline">Ajouter une catégorie</span>
-    </button>
-  </div>
-  @!component('components/modals/mod_category_add', { roles })
-  @!component('components/modals/mod_category_edit', { roles })
-  @!component('components/modals/mod_category_delete')
-  @!component('components/modals/mod_book_delete')
-  @!component('components/modals/mod_book_storage')
-</div>
-@endslot
+      <div class="fixed bottom-20 right-4 md:right-16 flex flex-row gap-2">
+        @if(categories.some((category) =>
+          category.books.some((book) => book.publishedAt === null),
+        ))
+          <a
+            class="btn btn-secondary btn-xl md:btn-md max-md:btn-circle"
+            href="/guild/{{ guild.id }}/publish"
+            title="Annoncer les nouveaux livrets"
+          >
+            @svg('heroicons:megaphone', { class: 'size-8 md:size-6' })
+            <span class="hidden md:inline">Annoncer les livrets</span>
+          </a>
+        @end
+
+        <button
+          class="btn btn-primary btn-xl md:btn-md max-md:btn-circle"
+          onclick="mod_category_add.showModal()"
+          type="button"
+          title="Ajouter une catégorie"
+          data-edit-mode
+        >
+          @svg('heroicons:plus', { class: 'size-10 md:size-6' })
+          <span class="hidden md:inline">Ajouter une catégorie</span>
+        </button>
+      </div>
+      @!component('components/modals/mod_category_add', { roles })
+      @!component('components/modals/mod_category_edit', { roles })
+      @!component('components/modals/mod_category_delete')
+      @!component('components/modals/mod_book_delete')
+      @!component('components/modals/mod_book_storage')
+      @!component('components/modals/mod_category_reset')
+    </div>
+  @end
 @end
